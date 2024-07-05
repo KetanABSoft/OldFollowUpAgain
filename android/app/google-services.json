@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "249612008871",
+    "project_id": "followupapp-66532",
+    "storage_bucket": "followupapp-66532.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:249612008871:android:5f14e6c5ccbc646d120a82",
+        "android_client_info": {
+          "package_name": "com.example.follow_up"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4HkEmXLOFDAPUSzGqxWmbwqdTqZ5Siis"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
