@@ -14,6 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:followup/notification_services.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'admin/admin_dashboard.dart';
 import 'dashboard.dart';
 
 String? token;
@@ -28,59 +29,46 @@ class loginScreen extends StatefulWidget {
 class _loginScreenState extends State<loginScreen> {
 
   TextEditingController _textEditingController = TextEditingController();
-  // final TextEditingController username = TextEditingController();
-  // final TextEditingController password = TextEditingController();
+
 
   TextEditingController usernamecontroller =TextEditingController();
   TextEditingController passwordcontroller =TextEditingController();
 
-  // Future emplogin(String username, String password) async {
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-  //   //var urlString = 'http://testfollowup.absoftwaresolution.in/getlist.php?Type=employeelogin';
-  //
-  //   var urlString = AppString.constanturl + 'employeelogin';
-  //
-  //   Uri uri = Uri.parse(urlString);
-  //   var response = await http.post(uri, body: {
-  //     "username": username,
-  //     "password": password,
-  //   });
-  //
-  //   final jsondata = json.decode(response.body);
-  //   print("jsondata");
-  //   print(jsondata);
-  //   if (jsondata['result'] == "failure") {
-  //     Fluttertoast.showToast(
-  //       backgroundColor: Color.fromARGB(255, 255, 94, 0),
-  //       textColor: Colors.white,
-  //       msg: jsondata['message'],
-  //       toastLength: Toast.LENGTH_SHORT,
-  //     );
-  //   } else if (jsondata['result'] == "success") {
-  //     Fluttertoast.showToast(
-  //       backgroundColor: Colors.green,
-  //       textColor: Colors.white,
-  //       msg: jsondata['message'],
-  //       toastLength: Toast.LENGTH_SHORT,
-  //     );
-  //     SharedPreferences preferences = await SharedPreferences.getInstance();
-  //     preferences.setString('id', jsondata['userdata']['id']);
-  //     preferences.setString('cmpid', jsondata['userdata']['company_id']);
-  //     preferences.setString('admintype', jsondata['userdata']['admin_type']);
-  //     preferences.setString('idemp', jsondata['userdata']['admin']);
-  //     Navigator.of(context)
-  //         .push(MaterialPageRoute(builder: (context) => DashboardScreen()));
-  //   }
-  // }
+  var dataa;
+  Future<bool> AdminLogin() async {
+    Map<String, dynamic> abc = {
+      'email': usernamecontroller.text.trim(),
+      'password': passwordcontroller.text.trim(),
+    };
+    try {
+      final response = await http.post(
+        Uri.parse("http://103.159.85.246:4000/api/employee/login"),
+        body: jsonEncode(abc),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        dataa = jsonDecode(response.body);
+        print('Data Added: $dataa');
+        return true; // Return 'success' if data is successfully added
+      } else {
+        print('Error: ${response.statusCode}');
+        return false; // Return specific error message for failed response
+      }
+    } catch (e) {
+      print('Exception during add operation: $e');
+      return false; // Return specific error message for exception
+    }
+  }
 
   var data;
-
   Future<bool> EmployeeLoginApi() async {
     Map<String, dynamic> abc = {
       'email': usernamecontroller.text.trim(),
       'password': passwordcontroller.text.trim(),
     };
-
     try {
       final response = await http.post(
         Uri.parse("http://103.159.85.246:4000/api/subemployee/login"),
@@ -295,87 +283,34 @@ class _loginScreenState extends State<loginScreen> {
                         SizedBox(
                           height: 20,
                         ),
-
-                        // isEmailCorrect
-                        //     ? ElevatedButton(
-                        //         style: ElevatedButton.styleFrom(
-                        //             shape: RoundedRectangleBorder(
-                        //                 borderRadius:
-                        //                     BorderRadius.circular(10.0)),
-                        //             backgroundColor: isEmailCorrect == false
-                        //                 ? Colors.red
-                        //                 : Colors.purple,
-                        //             padding: EdgeInsets.symmetric(
-                        //                 horizontal: 131, vertical: 20)
-                        //             // padding: EdgeInsets.only(
-                        //             //     left: 120, right: 120, top: 20, bottom: 20),
-                        //             ),
-                        //         onPressed: () {
-                        //           if (_formKey.currentState!.validate()) {
-                        //             // If the form is valid, display a snackbar. In the real world,
-                        //             // you'd often call a server or save the information in a database.
-                        //             ScaffoldMessenger.of(context).showSnackBar(
-                        //               const SnackBar(
-                        //                   content: Text('Processing Data')),
-                        //             );
-                        //           }
-                        //           // Navigator.push(
-                        //           //     context,
-                        //           //     MaterialPageRoute(
-                        //           //         builder: (context) => loginScreen()));
-                        //         },
-                        //         child: Text(
-                        //           'Log In',
-                        //           style: TextStyle(fontSize: 17),
-                        //         ))
-                        //     : Container(),
                       ],
                     ),
                   ),
-
-                  //this is button
-                  // const SizedBox(
-                  //   height: 30,
-                  // ),
-                  // ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //         shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(10.0)),
-                  //         backgroundColor: Colors.purple,
-                  //         padding: EdgeInsets.symmetric(
-                  //             horizontal: MediaQuery.of(context).size.width / 3.3,
-                  //             vertical: 20)
-                  //         // padding: EdgeInsets.only(
-                  //         //     left: 120, right: 120, top: 20, bottom: 20),
-                  //         ),
-                  //     onPressed: () {
-                  //       Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(
-                  //               builder: (context) => loginScreen()));
-                  //     },
-                  //     child: Text(
-                  //       'Sounds Good!',
-                  //       style: TextStyle(fontSize: 17),
-                  //     )), //
                   SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          final SharedPreferences sharedPreferences =
-                              await SharedPreferences.getInstance();
-                          sharedPreferences.setString(
-                              'username', usernamecontroller.text);
-                          login(usernamecontroller.text, passwordcontroller.text);
-                          usernamecontroller.clear();
-                          passwordcontroller.clear();
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => loginScreen()));
+                          bool success = await AdminLogin();
+                          if(success)
+                          {
+                            AdminLogin();
+                            usernamecontroller.clear();
+                            passwordcontroller.clear();
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => AdminDashboardScreen()));
+                          }
+                          else
+                          {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Usenname or password are incorrect"),
+                                duration: Duration(seconds: 2),),
+                            );
+                          }
                         },
                         child: Text(
-                          'Login',
+                          ' Admin Login',
                           style: TextStyle(
                               color: AppString.appgraycolor,
                               fontWeight: FontWeight.w600,
@@ -439,26 +374,6 @@ class _loginScreenState extends State<loginScreen> {
                       ),
                     ],
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Text(
-                  //       'You have\'t any account?',
-                  //       style: TextStyle(
-                  //         color: Colors.black.withOpacity(0.6),
-                  //       ),
-                  //     ),
-                  //     TextButton(
-                  //       onPressed: () {},
-                  //       child: Text(
-                  //         'Sign Up',
-                  //         style: TextStyle(
-                  //             color: Colors.purple,
-                  //             fontWeight: FontWeight.w500),
-                  //       ),
-                  //     )
-                  //   ],
-                  // ),
                 ],
               ),
             ),

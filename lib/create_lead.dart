@@ -319,38 +319,36 @@ class _LeadFormState extends State<LeadForm> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen(),));
             },
           ),
         ),
         body: SingleChildScrollView(
           child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(vertical: 25,horizontal: 25),
               child: Form(
                   key: formKey,
                   child: Column(
                     children: [
-                      SizedBox(
-                        height: 20,
-                      ),
                       Container(
-                        height: 45,
+                        height: 70,
                         child: TextFormField(
                           controller: CustomerName,
                           decoration: const InputDecoration(
                             labelText: 'Customer Name',
+                              helperText: "",
                             labelStyle: TextStyle(
                               color: Colors.grey,
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black),
                             ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(
@@ -358,27 +356,26 @@ class _LeadFormState extends State<LeadForm> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      // SizedBox(height: 12,),
                       Container(
-                        height: 45,
+                        height: 70,
                         child: TextFormField(
                           controller: CompanyName,
                           decoration: const InputDecoration(
                             labelText: 'Company Name',
+                            helperText: "",
                             labelStyle: TextStyle(
                               color: Colors.grey,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )
                           ),
                           validator: (value) {
                             if (value!.isEmpty) {
@@ -388,27 +385,26 @@ class _LeadFormState extends State<LeadForm> {
                           },
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      // SizedBox(height: 20,),
                       Container(
-                        height: 45,
+                        height: 70,
                         child: TextFormField(
                           controller: ContactNo,
                           decoration: const InputDecoration(
                             labelText: 'Contact number',
+                              helperText: "",
                             labelStyle: TextStyle(
                               color: Colors.grey,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
@@ -427,59 +423,56 @@ class _LeadFormState extends State<LeadForm> {
                           },
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      // SizedBox(height: 20,),
                       Container(
-                        height: 45,
+                        height: 70,
                         child: TextFormField(
                           controller: MailId,
                           decoration: const InputDecoration(
                             labelText: 'Mail Id',
+                              helperText: "",
                             labelStyle: TextStyle(
                               color: Colors.grey,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )
                           ),
+
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      // SizedBox(height: 20,),
                       Container(
-                        height: 45,
+                        height: 70,
                         child: TextFormField(
                           controller: Website,
                           decoration: const InputDecoration(
                             labelText: 'Website',
+                              helperText: "",
                             labelStyle: TextStyle(
                               color: Colors.grey,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      // SizedBox(height: 20,),
                       Container(
-                        height: 75,
+                        height: 80,
                         child: TextFormField(
                           controller: Description,
                           maxLines: 3,
@@ -488,44 +481,44 @@ class _LeadFormState extends State<LeadForm> {
                             labelStyle: TextStyle(
                               color: Colors.grey,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      SizedBox(height: 20,),
                       Container(
-                        height: 45,
+                        height: 70,
                         child: TextFormField(
                           controller: OwnerName,
                           decoration: const InputDecoration(
                             labelText: 'Owner name',
+                              helperText: "",
                             labelStyle: TextStyle(
                               color: Colors.grey,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              )
                           ),
+
                         ),
                       ),
                       SizedBox(
-                        height: 60,
+                        height: 50,
                       ),
                       //(_selectedImage != null)
                       _buildSelectedImage(),
@@ -538,72 +531,98 @@ class _LeadFormState extends State<LeadForm> {
                             myAlert();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xff7c81dd),
+                            backgroundColor:Color(0xff7c81dd),
                           ),
                           child: Text('Upload Photo',
                               style: TextStyle(
                                 fontFamily: 'Poppins',
-                                color: Colors.white,
+                                color:Colors.white,
                               )),
                         ),
                       SizedBox(
                         height: 20,
                       ),
                       if (widget.task != 'view')
-                        Row(
+                        (Row(
                           children: [
                             Expanded(
                               child: (widget.id != '0')
                                   ? ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xff7c81dd),
-                                      ),
-                                      child: Text(
-                                        'Update',
-                                        style: TextStyle(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                  Color(0xff7c81dd),
+                                ),
+                                child: Text(
+                                  'Update',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color:Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  if (formKey.currentState!
+                                      .validate()) {
+                                    // updatelead(
+                                    //   CustomerName.text,
+                                    //   CompanyName.text,
+                                    //   ContactNo.text,
+                                    //   MailId.text,
+                                    //   Website.text,
+                                    //   Description.text,
+                                    //   OwnerName.text,
+                                    // );
+                                    updateleead();
+                                  }
+                                },
+                              )
+                                  : ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                    Color(0xff7c81dd),
+                                  ),
+                                  child: Text('Save',
+                                      style: TextStyle(
                                           fontFamily: 'Poppins',
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        if (formKey.currentState!.validate()) {
-                                          updatelead(
-                                            CustomerName.text,
-                                            CompanyName.text,
-                                            ContactNo.text,
-                                            MailId.text,
-                                            Website.text,
-                                            Description.text,
-                                            OwnerName.text,
+                                        color: Colors.white,)),
+                                  onPressed: () async {
+                                    if (formKey.currentState!
+                                        .validate()) {
+                                      bool success = await addlead();
+                                      if(success)
+                                        {
+                                          addlead();
+                                          CustomerName.clear();
+                                          CompanyName.clear();
+                                          ContactNo.clear();
+                                          MailId.clear();
+                                          Website.clear();
+                                          Description.clear();
+                                          OwnerName.clear();
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              backgroundColor: Colors.green,
+                                              content: Text('Lead is Created Succesfully'),
+                                              duration: Duration(seconds: 3),
+                                            ),
+                                          );
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => LeadList(),));
+                                        }
+                                      else
+                                        {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Lead is not created please Fill all Fields'),
+                                              duration: Duration(seconds: 2),
+                                            ),
                                           );
                                         }
-                                      },
-                                    )
-                                  : ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xff7c81dd),
-                                      ),
-                                      child: Text('Save',
-                                          style: TextStyle(
-                                            fontFamily: 'Poppins',
-                                            color: Colors.white,
-                                          )),
-                                      onPressed: () {
-                                        if (formKey.currentState!.validate()) {
-                                          savelead(
-                                              CustomerName.text,
-                                              CompanyName.text,
-                                              ContactNo.text,
-                                              MailId.text,
-                                              Website.text,
-                                              Description.text,
-                                              OwnerName.text);
-                                        }
-                                      }),
+
+                                    }
+                                  }),
                             ),
                             SizedBox(
                                 width:
-                                    16), // You can adjust the spacing between buttons
+                                16), // You can adjust the spacing between buttons
                             Expanded(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -630,9 +649,73 @@ class _LeadFormState extends State<LeadForm> {
                               ),
                             ),
                           ],
-                        )
+                        ))
                     ],
                   ))),
         ));
+  }
+  var data1;
+
+  Future<bool> addlead() async {
+    Map<String, dynamic> abc = {
+      'customerName': CustomerName.text.trim(),
+      'companyName':CompanyName.text.trim(),
+      'contactNo': ContactNo.text.trim(),
+      'email':MailId.text.trim(),
+      'description': Description.text.trim(),
+      'ownerName': OwnerName.text.trim(),
+      'website': Website.text.trim(),
+    };
+    try {
+      final response = await http.post(
+        Uri.parse("http://103.159.85.246:4000/api/lead/createLead"),
+        body: jsonEncode(abc),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54",
+        },
+      );
+      if (response.statusCode == 200) {
+        data1 = jsonDecode(response.body);
+        print('#### Data Added: $data1');
+        return true; // Return true on successful response
+      } else {
+        print('Error: ${response.statusCode}');
+        print('Error Body: ${response.body}');
+        return false; // Return false on error response
+      }
+    } catch (e) {
+      print('Exception during add operation: $e');
+      return false; // Return false on exception
+    }
+  }
+  Future<bool> updateleead() async {
+    Map<String, dynamic> abc = {
+      // your map initialization
+    };
+    try {
+      final response = await http.put(
+        Uri.parse("http://103.159.85.246:4000/api/lead/editLead/668bc85787514aa3ae6e5937"),
+        body: jsonEncode(abc),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54",
+        },
+      );
+      if (response.statusCode == 200) {
+        // Successful update
+        print('#### Data Updated: ${response.body}');
+        return true;
+      } else {
+        // Error updating
+        print('Error: ${response.statusCode}');
+        print('Error Body: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      // Exception
+      print('Exception during update operation: $e');
+      return false;
+    }
   }
 }

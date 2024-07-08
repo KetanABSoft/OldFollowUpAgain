@@ -174,7 +174,7 @@ class _MyAppState extends State<MyApp> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TaskForm(
+                    builder: (context) => EmployeeAddTask(
                       audioPath: "",
                     ),
                   ),
@@ -235,7 +235,7 @@ class _MyAppState extends State<MyApp> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TaskForm(
+                    builder: (context) => EmployeeAddTask(
                       audioPath: recordFilePath,
                     ),
                   ),

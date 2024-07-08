@@ -340,7 +340,7 @@ class CustomeListOverdue extends StatelessWidget {
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      OverdueTasknew(
+                                                      OverdueTask(
                                                           admin_type: admintype
                                                               .toString()),
                                                 ),
@@ -442,7 +442,7 @@ class CustomeListOverdue extends StatelessWidget {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  OverdueTasknew(
+                                                  OverdueTask(
                                                       admin_type:
                                                           admintype.toString()),
                                             ),

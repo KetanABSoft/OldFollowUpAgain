@@ -18,9 +18,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   //FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
   FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
@@ -45,7 +45,7 @@ void main() async {
         (BuildContext context, Orientation orientation, DeviceType deviceType) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: id == null ? TaskCompletedScreen() : TaskCompletedScreen(),
+        home: id == null ? loginScreen() : loginScreen(),
       );
     },
   ));

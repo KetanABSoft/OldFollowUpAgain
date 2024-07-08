@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:camera/camera.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:followup/constant/conurl.dart';
@@ -8,6 +9,7 @@ import 'dart:convert';
 import 'package:followup/widgets/CustomListincompleted.dart';
 import 'package:followup/widgets/CustomeListOverdue.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'dashboard.dart';
@@ -88,33 +90,6 @@ class Data {
     );
   }
 }
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: OverdueTasknew(admin_type: adminttype.toString()),
-  ));
-}
-
-class OverdueTasknew extends StatelessWidget {
-  final String admin_type;
-
-  OverdueTasknew({required this.admin_type});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Future Creation',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: OverdueTask(admin_type: admin_type),
-    );
-  }
-}
-
 class OverdueTask extends StatefulWidget {
   final String admin_type;
   const OverdueTask({Key? key, required this.admin_type}) : super(key: key);
@@ -198,509 +173,324 @@ class _OverdueTask extends State<OverdueTask> {
         return true;
       },
       child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color(0xFFFFD700),
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(30),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              title: const Text(
-                'Task Overdue',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: AppString.appgraycolor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              centerTitle: true,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: AppString.appgraycolor),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DashboardScreen(),
-                    ),
-                  );
-                },
-              ),
+        appBar: AppBar(
+          backgroundColor: Colors.red,
+          elevation: 0,
+          title: Text(
+            'Task Overdue',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ),
-        body: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.topLeft,
-              child: Container(
-                child: Column(
-                  children: [
-                    adminType == 'admin'
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
+        body: FutureBuilder(
+          future: getApi(),
+          builder: (context , snapshot){
+            if(snapshot.hasData)
+            {
+              return Expanded(
+                child: ListView.builder(
+                  itemCount:overdueTasks.length,
+                  itemBuilder: (context, index) {
+                    var startDate = DateTime.parse(overdueTasks[index]["startDate"]);
+                    var formattedStartDate =
+                    DateFormat('yyyy-MM-dd').format(startDate);
+                    var endDate = DateTime.parse(overdueTasks[index]["deadlineDate"]);
+                    var formattedEndDate =
+                    DateFormat('yyyy-MM-dd').format(endDate);
+                    return Padding(
+                      padding: EdgeInsets.only(top: 15),
+                      child: Container(
+                        height: 200,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(11),
+                          border: Border.all(color: Colors.red, width: 2),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 50,
+                              color: Colors.red,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 10),
+                                    child: Text(
+                                      "${overdueTasks[index]["status"]}",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 10),
+                                    child: Text(
+                                      "Assign by ",
+                                      // "${completedTasks[index]["assignTo"]}",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: TextFormField(
-                                        decoration: const InputDecoration(
-                                          icon: Icon(Icons.date_range),
-                                          labelText: 'Start Date',
-                                          labelStyle: TextStyle(
-                                            fontFamily: 'Poppins',
-                                            color: Colors.grey,
-                                          ),
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.grey),
-                                          ),
-                                          focusedBorder: UnderlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.blue),
-                                          ),
-                                        ),
-                                        controller: fromDateController,
-                                        readOnly: true,
-                                        onTap: () async {
-                                          final pickedDate =
-                                              await showDatePicker(
-                                            context: context,
-                                            initialDate: fromDate,
-                                            firstDate: DateTime(1950),
-                                            lastDate: DateTime(2100),
-                                          );
-
-                                          if (pickedDate != null) {
-                                            setState(() {
-                                              fromDate = pickedDate;
-                                              fromDateController.text =
-                                                  DateFormat('dd-MM-yyyy')
-                                                      .format(fromDate);
-                                            });
-                                          }
-                                        },
-                                      ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    "${overdueTasks[index]["title"]}",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    Expanded(
-                                      child: TextFormField(
-                                        decoration: const InputDecoration(
-                                          icon: Icon(Icons.date_range),
-                                          labelText: 'To Date',
-                                          labelStyle: TextStyle(
-                                            fontFamily: 'Poppins',
-                                            color: Colors.grey,
-                                          ),
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.grey),
-                                          ),
-                                          focusedBorder: UnderlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.blue),
-                                          ),
-                                        ),
-                                        controller: toDateController,
-                                        readOnly: true,
-                                        onTap: () async {
-                                          final pickedDate =
-                                              await showDatePicker(
-                                            context: context,
-                                            initialDate: toDate,
-                                            firstDate: DateTime(1950),
-                                            lastDate: DateTime(2100),
-                                          );
-
-                                          // if (pickedDate != null) {
-                                          //     setState(() {
-                                          //       toDate = pickedDate;
-                                          //       toDateController.text = DateFormat('dd-MM-yyyy').format(toDate);
-                                          //     });
-                                          //   }
-
-                                          if (pickedDate != null) {
-                                            // Check if pickedDate is after the current date
-
-                                            // Extract date components without time
-                                            DateTime currentDateWithoutTime =
-                                                DateTime(
-                                                    DateTime.now().year,
-                                                    DateTime.now().month,
-                                                    DateTime.now().day);
-                                            DateTime pickedDateWithoutTime =
-                                                DateTime(
-                                                    pickedDate.year,
-                                                    pickedDate.month,
-                                                    pickedDate.day);
-
-                                            if (pickedDateWithoutTime.isAfter(
-                                                    currentDateWithoutTime) ||
-                                                pickedDateWithoutTime
-                                                    .isAtSameMomentAs(
-                                                        currentDateWithoutTime)) {
-                                              //String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
-                                              setState(() {
-                                                String formattedDate =
-                                                    DateFormat('dd-MM-yyyy')
-                                                        .format(pickedDate);
-                                                toDateController.text =
-                                                    formattedDate;
-                                              });
-                                            } else {
-                                              // Display an error message or take appropriate action
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: Text('Invalid Date',
-                                                        style: TextStyle(
-                                                            fontFamily:
-                                                                'Poppins')),
-                                                    content: Text(
-                                                        'Please select the correct date.',
-                                                        style: TextStyle(
-                                                            fontFamily:
-                                                                'Poppins')),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Text('OK',
-                                                            style: TextStyle(
-                                                                fontFamily:
-                                                                    'Poppins')),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            }
-                                          } else {}
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                  ],
+                                  ),
                                 ),
-                                SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: DropdownSearch<String>(
-                                        items: stateType,
-                                        onChanged: (String? value) {
-                                          if (value != null) {
-                                            int selectedIndex =
-                                                stateType.indexOf(value);
-                                            selectedId =
-                                                stateTypeid[selectedIndex];
-                                            // Use selectedId and value as needed
-                                            setState(() {
-                                              selectedValue = value;
-                                            });
-                                          }
-                                        },
-                                        selectedItem: selectedValue,
-                                      ),
+                                PopupMenuButton<String>(
+                                  itemBuilder: (BuildContext context) => [
+                                    const PopupMenuItem<String>(
+                                      value: 'view',
+                                      child: Text('View'),
                                     ),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          List<Data> dataList = await fetchData(
-                                            fromDate: fromDate,
-                                            toDate: toDate,
-                                            selectedValue: selectedId,
-                                          );
-                                          setState(() {
-                                            // Update the state with the new data
-                                            data = dataList;
-                                          });
-                                        },
-                                        child: Text('Search',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins')),
-                                      ),
+                                    const PopupMenuItem<String>(
+                                      value: 'remark',
+                                      child: Text('Remark'),
                                     ),
-                                    SizedBox(width: 10),
+                                    const PopupMenuItem<String>(
+                                      value: 'edit',
+                                      child: Text('Update'),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'complete',
+                                      child: Text('Mark as Completed'),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'delete',
+                                      child: Text('Delete'),
+                                    ),
                                   ],
+                                  onSelected: (String value) {
+                                    if (value == 'view') {
+                                      // Handle view action
+                                    } else if (value == 'edit') {
+                                      // Handle edit action
+                                    } else if (value == 'delete') {
+                                      // Handle delete action
+                                    } else if (value == 'remark') {
+                                      // Handle remark action
+                                    } else if (value == 'complete') {
+                                      // Handle complete action
+                                      _showImagePickerOptions();
+                                    }
+                                  },
+                                  icon: Icon(Icons.more_vert),
                                 ),
                               ],
                             ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
+                            SizedBox(height: 5),
+                            Divider(color: Colors.grey, thickness: 2),
+                            Row(
                               children: [
                                 Expanded(
-                                  child: TextFormField(
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.date_range),
-                                      labelText: 'Start Date',
-                                      labelStyle: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        color: Colors.grey,
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Icon(Icons.calendar_today_outlined, size: 18),
                                       ),
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.grey),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          formattedStartDate,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
+                                          ),
+                                        ),
                                       ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.blue),
-                                      ),
-                                    ),
-                                    controller: fromDateController,
-                                    readOnly: true,
-                                    onTap: () async {
-                                      final pickedDate = await showDatePicker(
-                                        context: context,
-                                        initialDate: fromDate,
-                                        firstDate: DateTime(1950),
-                                        lastDate: DateTime(2100),
-                                      );
-
-                                      if (pickedDate != null) {
-                                        setState(() {
-                                          fromDate = pickedDate;
-                                          fromDateController.text =
-                                              DateFormat('dd-MM-yyyy')
-                                                  .format(fromDate);
-                                        });
-                                      }
-                                    },
+                                    ],
                                   ),
                                 ),
                                 SizedBox(width: 10),
                                 Expanded(
-                                  child: TextFormField(
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.date_range),
-                                      labelText: 'To Date',
-                                      labelStyle: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        color: Colors.grey,
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Icon(Icons.watch_later_outlined, size: 18),
                                       ),
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.grey),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "${overdueTasks[index]["startTime"]}",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
+                                          ),
+                                        ),
                                       ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.blue),
-                                      ),
-                                    ),
-                                    controller: toDateController,
-                                    readOnly: true,
-                                    onTap: () async {
-                                      final pickedDate = await showDatePicker(
-                                        context: context,
-                                        initialDate: toDate,
-                                        firstDate: DateTime(1950),
-                                        lastDate: DateTime(2100),
-                                      );
-
-                                      // if (pickedDate != null) {
-                                      //     setState(() {
-                                      //       toDate = pickedDate;
-                                      //       toDateController.text = DateFormat('dd-MM-yyyy').format(toDate);
-                                      //     });
-                                      //   }
-
-                                      if (pickedDate != null) {
-                                        // Check if pickedDate is after the current date
-
-                                        // Extract date components without time
-                                        DateTime currentDateWithoutTime =
-                                            DateTime(
-                                                DateTime.now().year,
-                                                DateTime.now().month,
-                                                DateTime.now().day);
-                                        DateTime pickedDateWithoutTime =
-                                            DateTime(
-                                                pickedDate.year,
-                                                pickedDate.month,
-                                                pickedDate.day);
-
-                                        if (pickedDateWithoutTime.isAfter(
-                                                currentDateWithoutTime) ||
-                                            pickedDateWithoutTime
-                                                .isAtSameMomentAs(
-                                                    currentDateWithoutTime)) {
-                                          //String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
-                                          setState(() {
-                                            String formattedDate =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(pickedDate);
-                                            toDateController.text =
-                                                formattedDate;
-                                          });
-                                        } else {
-                                          // Display an error message or take appropriate action
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return AlertDialog(
-                                                title: Text('Invalid Date',
-                                                    style: TextStyle(
-                                                        fontFamily: 'Poppins')),
-                                                content: Text(
-                                                    'Please select the correct date.',
-                                                    style: TextStyle(
-                                                        fontFamily: 'Poppins')),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Text('OK',
-                                                        style: TextStyle(
-                                                            fontFamily:
-                                                                'Poppins')),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        }
-                                      } else {}
-                                    },
+                                    ],
                                   ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    List<Data> dataList = await fetchData(
-                                        fromDate: fromDate,
-                                        toDate: toDate,
-                                        selectedValue: selectedId);
-                                    setState(() {
-                                      // Update the state with the new data
-                                      data = dataList;
-                                    });
-                                  },
-                                  child: Text('Search',
-                                      style: TextStyle(fontFamily: 'Poppins')),
                                 ),
                               ],
                             ),
-                          ),
-                    Expanded(
-                      child: data.isEmpty // Check if the data list is empty
-                          ? FutureBuilder<List<Data>>(
-                              future: fetchData(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return ListView.builder(
-                                      shrinkWrap: true,
-                                      controller: controller,
-                                      itemCount: snapshot.data!.length,
-                                      padding: EdgeInsets.only(
-                                          top: 10,
-                                          bottom: 80,
-                                          left: 15,
-                                          right: 15),
-                                      itemBuilder: (context, index) {
-                                        return GestureDetector(
-                                          child: CustomeListOverdue(
-                                            trailingButtonOnTap: null,
-                                            id: snapshot.data![index].id,
-                                            title: snapshot.data![index].title,
-                                            date: snapshot.data![index].date,
-                                            deadline:
-                                                snapshot.data![index].deadline,
-                                            starttime:
-                                                snapshot.data![index].starttime,
-                                            endtime:
-                                                snapshot.data![index].endtime,
-                                            assign:
-                                                snapshot.data![index].assign,
-                                            assignid:
-                                                snapshot.data![index].assignid,
-                                            status:
-                                                snapshot.data![index].status,
-                                            admintype: '$adminttype',
-                                            mainid: '$userid',
-                                            opacity: 1,
+                            SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Icon(Icons.calendar_today_outlined, size: 18),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          formattedEndDate,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
                                           ),
-                                        );
-                                      });
-                                } else if (snapshot.hasError) {
-                                  return Text(snapshot.error.toString());
-                                }
-                                // By default show a loading spinner.
-
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              },
-                            )
-                          : FutureBuilder<List<Data>>(
-                              future:
-                                  fetchData(fromDate: fromDate, toDate: toDate),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return ListView.builder(
-                                      shrinkWrap: true,
-                                      controller: controller,
-                                      itemCount: data.length,
-                                      padding: EdgeInsets.only(
-                                          top: 10,
-                                          bottom: 80,
-                                          left: 15,
-                                          right: 15),
-                                      itemBuilder: (context, index) {
-                                        return GestureDetector(
-                                          child: CustomeListOverdue(
-                                            trailingButtonOnTap: null,
-                                            id: data[index].id,
-                                            title: data[index].title,
-                                            date: data[index].date,
-                                            deadline: data[index].deadline,
-                                            starttime: data[index].starttime,
-                                            endtime: data[index].endtime,
-                                            assign: data[index].assign,
-                                            assignid: data[index].assignid,
-                                            status: data[index].status,
-                                            admintype: '$adminttype',
-                                            mainid: '$userid',
-                                            opacity: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Icon(Icons.watch_later_outlined, size: 18),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "${overdueTasks[index]["endTime"]}",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
                                           ),
-                                        );
-                                      });
-                                } else if (snapshot.hasError) {
-                                  return Text(snapshot.error.toString());
-                                }
-                                // By default show a loading spinner.
-
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                    ),
-                  ],
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ),
-          ],
+              );
+            }
+            else
+            {
+              return Center(
+                  child: CircularProgressIndicator());
+            }
+
+          },
+
         ),
       ),
     );
   }
+  void _showImagePickerOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              InkWell(
+                onTap: () {
+                  _pickImageFromCamera();
+                  Navigator.pop(context);
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.camera_alt, size: 70),
+                    SizedBox(width: 10),
+                    Text("Camera"),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle other options if needed
+                  Navigator.pop(context);
+                },
+                child: Text('Cancel'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImageFromCamera() async {
+    final XFile? returnImage = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (returnImage == null) return;
+    setState(() {
+      // Handle the selected image
+    });
+  }
+  var overduedata;
+  List<dynamic> overdueTasks = [];
+  Future<void> getApi() async {
+    final response = await http.get(Uri.parse("http://103.159.85.246:4000/api/task/tasks/over"),
+        headers: {
+          "Authorization":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54"
+        }
+    );
+    if(response.statusCode==200)
+    {
+      overduedata = jsonDecode(response.body.toString());
+      setState(() {
+        overdueTasks = overduedata["overdueTasks"];
+      });
+      print("###### Data is $overdueTasks");
+      return overduedata;
+    }
+    else
+    {
+      print("#@@@@@@@@@ Data is $overduedata");
+      return overduedata;
+    }
+  }
 }
+

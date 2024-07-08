@@ -1,28 +1,38 @@
 import 'dart:convert';
 import 'dart:async';
-import 'dart:io';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:followup/OverdueTask.dart';
 import 'package:followup/Taskincompleted.dart';
 import 'package:followup/constant/conurl.dart';
 import 'package:followup/create_lead.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:followup/notification_services.dart';
 import 'package:http/http.dart' as http;
-import 'AddTask.dart';
-import 'ListAll.dart';
-import 'Profile.dart';
-import 'TaskCompleted.dart';
-import 'TaskReceive.dart';
-import 'TaskSend.dart';
+import '../AddTask.dart';
+import '../ListAll.dart';
+import '../Profile.dart';
+
 
 import 'package:flutter/services.dart';
 import 'package:followup/Notifications_screen.dart';
+
+import '../TaskCompleted.dart';
+import '../TaskReceive.dart';
+import '../TaskSend.dart';
+import 'admin_add_employee.dart';
+import 'admin_add_lead.dart';
+import 'admin_add_task.dart';
+import 'admin_overdue_task.dart';
+import 'admin_pending_task.dart';
+import 'admin_profile_screen.dart';
+import 'admin_total_task_screen.dart';
+import 'calculate_salary.dart';
+
 
 // import 'package:followupnew/ListAll.dart';
 
@@ -34,38 +44,31 @@ import 'package:followup/Notifications_screen.dart';
 // void main() {
 //   runApp(TaskManagementApp());
 // }
-String? id;
+String? id1;
 var mainid;
-String? userid;
-String? cmpid;
-String? admintype;
-String? listall;
-String? completed;
-String? receive;
-String? send;
-String? token;
-int notificationCount = 0;
-bool _isExitConfirmed = false;
-bool isClockedIn = false;
-DateTime? clockInTime;
-DateTime? clockOutTime;
-late String currentDate;
-late String userLocation = '';
-
-
+String? userid1;
+String? cmpid1;
+String? admintype1;
+String? listall1;
+String? completed1;
+String? receive1;
+String? send1;
+String? token1;
+int notificationCount1 = 0;
+bool _isExitConfirmed1 = false;
 
 Future fcmtoken() async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   //token = preferences.getString('token');
-  admintype = preferences.getString('admintype');
+  admintype1 = preferences.getString('admintype');
   String? token = await FirebaseMessaging.instance.getToken();
 
-  id = preferences.getString('id');
+  id1 = preferences.getString('id');
   var urlString = AppString.constanturl + 'update_fcm';
 
   Uri uri = Uri.parse(urlString);
   var response = await http.post(uri,
-      body: {"fcm_token": '$token', "admintype": '$admintype', "id": '$id'});
+      body: {"fcm_token": '$token', "admintype": '$admintype1', "id": '$id1'});
 }
 
 void main() async {
@@ -82,13 +85,13 @@ void main() async {
   // }
   //    });
   // notificationServices.showNotification();
-  runApp(DashboardScreen());
+  runApp(AdminDashboardScreen());
   //runApp(const MyApp());
 }
 
 Future<bool> onWillPopnew(BuildContext context) async {
   print("hiiii");
-  if (_isExitConfirmed) {
+  if (_isExitConfirmed1) {
     return true;
   } else {
     final confirmExit = await showDialog<bool>(
@@ -105,7 +108,7 @@ Future<bool> onWillPopnew(BuildContext context) async {
             ),
             TextButton(
               onPressed: () {
-                _isExitConfirmed = true;
+                _isExitConfirmed1 = true;
                 Navigator.of(context).pop(true);
               },
               child: Text('Yes', style: TextStyle(fontFamily: 'Poppins')),
@@ -194,12 +197,12 @@ NotificationServices notificationServices = NotificationServices();
 //   }
 // }
 
-class DashboardScreen extends StatefulWidget {
+class AdminDashboardScreen extends StatefulWidget {
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen>
+class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     with AutomaticKeepAliveClientMixin {
   Timer? timer;
   NotificationServices notificationServices = NotificationServices();
@@ -211,7 +214,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     notificationServices.requestNotificationPermission();
     notificationServices.firebaseInit();
     fetchcount();
-    print(notificationCount);
+    print(notificationCount1);
     //Navigator.pop(context);
 
     setState(() {
@@ -228,36 +231,36 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   void fetchcount() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    id = preferences.getString('id');
-    cmpid = preferences.getString('cmpid');
-    admintype = preferences.getString('admintype');
+    id1 = preferences.getString('id');
+    cmpid1= preferences.getString('cmpid');
+    admintype1 = preferences.getString('admintype');
     String currentTime = preferences.getString('preferencetime') ?? "";
 
     var url = Uri.parse(AppString.constanturl + 'getnotificationscount');
     final response = await http.post(url, body: {
-      "id": id,
-      "cmpid": cmpid,
-      "admintype": admintype,
+      "id": id1,
+      "cmpid": cmpid1,
+      "admintype": admintype1,
       "date": currentTime,
     });
 
     var jsondata = jsonDecode(response.body);
 
     setState(() {
-      notificationCount = int.parse(jsondata['count']);
+      notificationCount1 = int.parse(jsondata['count']);
     });
   }
 
   Future<void> fetchlist() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    userid = preferences.getString('id');
-    cmpid = preferences.getString('cmpid');
-    admintype = preferences.getString('admintype');
+    userid1 = preferences.getString('id');
+    cmpid1 = preferences.getString('cmpid');
+    admintype1 = preferences.getString('admintype');
     //String apiUrl = 'http://testfollowup.absoftwaresolution.in/getlist.php?Type=gettaskcount';
     String apiUrl = AppString.constanturl + 'gettaskcount';
     var response = await http.post(
       Uri.parse(apiUrl),
-      body: {'id': userid, 'cmpid': cmpid, 'admintype': admintype},
+      body: {'id': userid1, 'cmpid': cmpid1, 'admintype': admintype1},
     );
     if (response.statusCode == 200) {
       setState(() {
@@ -337,20 +340,23 @@ class _DashboardScreenState extends State<DashboardScreen>
     setState(() {
       _currentIndex = index;
       if (_currentIndex == 1) {
-        // Profile tab is pressed
+        _handleAddEmployee(context);
+      }
+      else if(_currentIndex==2)
+      {
         _handleAddTask(context);
-      } else if (_currentIndex == 2) {
+      }
+      else if (_currentIndex == 3) {
         _handleAddLead(context);
-      } else if (_currentIndex == 3) {
-        _handleNotifications(context);
       } else if (_currentIndex == 4) {
+        _handleNotifications(context);
+      } else if (_currentIndex == 5) {
         _handleProfile(context);
       } else {
         _handleDashboard(context);
       }
     });
   }
-
   final List<TaskData> taskData = [
     TaskData(
       taskName: 'Task',
@@ -364,7 +370,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     ),
     TaskData(
       taskName: 'Overdue',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Color.fromARGB(
         255, // Alpha component (fully opaque)
         194, // Red component
@@ -431,7 +437,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => DashboardScreen(),
+        builder: (context) => AdminDashboardScreen(),
       ),
     );
   }
@@ -440,7 +446,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => profilemanagement(),
+        builder: (context) => AdminProfileScreen(),
       ),
     );
   }
@@ -458,15 +464,15 @@ class _DashboardScreenState extends State<DashboardScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EmployeeAddTask(audioPath: AppString.audiourl),
+        builder: (context) => AdminAddTask(audioPath: ''),
       ),
-   );
+    );
   }
 
   void _handleAddLead(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LeadForm(id: '0', task: '')),
+      MaterialPageRoute(builder: (context) => AddLead(id: '0', task: '')),
     );
   }
 
@@ -474,19 +480,19 @@ class _DashboardScreenState extends State<DashboardScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ListScreen(admin_type: admintype.toString()),
+        builder: (context) => AdminTotalTask(admin_type: admintype1.toString()),
       ),
-   );
+    );
   }
 
   void _handleNotifications(BuildContext context) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            NotificationScreen(admin_type: admintype.toString()),
-      ),
-   );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) =>
+    //         NotificationScreen(admin_type: admintype1.toString()),
+    //   ),
+    // );
   }
 
   void _handleCardincompltedTap() {
@@ -494,45 +500,50 @@ class _DashboardScreenState extends State<DashboardScreen>
       context,
       MaterialPageRoute(
         builder: (context) =>
-        Taskincompleted()
-            // Taskincompletednew(admin_type: admintype.toString()),
+            AdminTaskincompleted(),
       ),
-   );
+    );
   }
 
   void handleoverduetask() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => OverdueTask(admin_type: admintype.toString()),
+        builder: (context) => AdminOverdueTask(admin_type: admintype1.toString()),
       ),
     );
   }
 
   void _handleCard2Tap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TaskCompletedScreen(),
-      ),
-   );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => CompletedTask(admin_type: admintype1.toString()),
+    //   ),
+    // );
   }
 
   void _handleCard3Tap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ReceiveTask(admin_type: admintype.toString()),
-      ),
-   );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => ReceiveTask(admin_type: admintype1.toString()),
+    //   ),
+    // );
   }
 
   void _handleCard4Tap() {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => SendTask(admin_type: admintype1.toString()),
+    //   ),
+    // );
+  }
+  void _handleAddEmployee(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => SendTask(admin_type: admintype.toString()),
-      ),
+      MaterialPageRoute(builder: (context) => AddEmployeeScreen()),
     );
   }
 
@@ -545,7 +556,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           preferredSize: Size.fromHeight(kToolbarHeight),
           child: Container(
             decoration: BoxDecoration(
-              color:Color(0xff7c81dd), // Set app bar background color
+              color: Color(0xFFFFD700), // Set app bar background color
               borderRadius: BorderRadius.vertical(
                 bottom: Radius.circular(
                     30), // Add curved border radius to the bottom
@@ -560,65 +571,57 @@ class _DashboardScreenState extends State<DashboardScreen>
               ],
             ),
             child: AppBar(
-              automaticallyImplyLeading: false,
               backgroundColor: Colors
                   .transparent, // Set app bar background color to transparent
               elevation: 0, // Remove app bar shadow
-              title: Row(
-                children: [
-                  Padding(
-                    padding:  EdgeInsets.only(bottom: 17),
-                    child: const Text(
-                      'Task Management',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color:Colors.white, // Set app bar text color to white
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
+              title: const Text(
+                'Task Management',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color:
+                  AppString.appgraycolor, // Set app bar text color to white
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              centerTitle: true,
+            ),
+
+          ),
+        ),
+        endDrawer: Container(
+          width: MediaQuery.of(context).size.width * 0.7, // Set 70% of screen width
+          child: Drawer(
+            // Wrap Drawer with a Container to set width
+            child: Container(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    child: DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFFD700),
+                      ),
+                      child: Text(
+                        'Drawer Header',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 15, left: 13),  // Adjust padding here
-                    child: GestureDetector(
-                      onTap: (){
-                        clockInOut();
-                      },
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                isClockedIn ? 'Clock Out' : 'Clock In',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          // Display clock-in time below clock-in button if clocked in
-                          if (isClockedIn && clockInTime != null)
-                            Text(
-                              'Clock In Time: ${DateFormat.jm().format(clockInTime!)}',
-                              style: TextStyle(fontSize: 14, color: Colors.white),
-                            ),
-                          // Display clock-out time below clock-out button if clocked out
-                          if (!isClockedIn && clockOutTime != null)
-                            Text(
-                              'Clock Out Time: ${DateFormat.jm().format(clockOutTime!)}',
-                              style: TextStyle(fontSize: 14, color: Colors.white),
-                            ),
-                        ],
-                      ),
-                    ),
-                  )
-
+                  ListTile(
+                    leading: Icon(Icons.monetization_on), // Use Icons.monetization_on for salary calculation
+                    title: Text('Calculate Salary',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey.shade800),),
+                    onTap: () {
+                      // Navigate or perform action
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>CalculateSalary()));
+                      // Add your navigation code here
+                    },
+                  ),
                 ],
               ),
             ),
@@ -694,6 +697,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                               case 5:
                                 _handleCard3Tap();
                                 break;
+                              case 6:
+                                _handleAddEmployee(context);
                             }
                           },
                         ),
@@ -733,6 +738,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                 label: 'Home',
               ),
               BottomNavigationBarItem(
+                icon: Icon(Icons.person_add), // Change the icon to an appropriate icon for adding an employee
+                label: 'Add Employee', // Label for the tab
+              ),
+              BottomNavigationBarItem(
                 icon: Icon(Icons.add),
                 label: 'Add Task',
               ),
@@ -754,7 +763,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           color: Colors.red,
                         ),
                         child: Text(
-                          notificationCount.toString(),
+                          notificationCount1.toString(),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -777,250 +786,6 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
     );
   }
-  void showResponseDialog(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Color(0xff7c81dd),
-        content: Text(message),
-        duration: Duration(seconds: 3), // Adjust the duration as needed
-      ),
-    );
-  }
-  Future<String> postClockIn() async {
-    Map<String, dynamic> data = {
-      'email': 'tanaya@gmail.com',
-      'role': 'sub-employee',
-      'ip': '103.17.159.50',
-      'lat': '37.4219983',
-      'long': '-122.084',
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse("http://103.159.85.246:4000/api/salary/clock-ins"),
-        body: jsonEncode(data),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        var responseData = jsonDecode(response.body);
-        print('Clock In Response: $responseData');
-        return 'Clock in successful'; // Return success message
-      } else {
-        print('Clock In Error: ${response.statusCode}');
-        return 'Failed to clock in'; // Return specific error message for failed response
-      }
-    } catch (e) {
-      print('Exception during clock in: $e');
-      return 'Failed to clock in'; // Return specific error message for exception
-    }
-  }
-
-
-
-  Future<String> postClockOut() async {
-    Map<String, dynamic> data = {
-      'email': 'tanaya@gmail.com',
-      'role': 'sub-employee',
-      'ip': '103.17.159.50',
-      'lat': '37.4219983',
-      'long': '-122.084',
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse("http://103.159.85.246:4000/api/salary/clock-outs"),
-        body: jsonEncode(data),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        var responseData = jsonDecode(response.body);
-        print('Clock Out Response: $responseData');
-        return 'Clock out successful'; // Return success message
-      } else {
-        print('Clock Out Error: ${response.statusCode}');
-        return 'Failed to clock out'; // Return specific error message for failed response
-      }
-    } catch (e) {
-      print('Exception during clock out: $e');
-      return 'Failed to clock out'; // Return specific error message for exception
-    }
-  }
-
-
-  TextEditingController emailController = TextEditingController();
-  TextEditingController startDateController = TextEditingController();
-  TextEditingController endDateController = TextEditingController();
-  final GlobalKey<FormState> Key = GlobalKey<FormState>();
-
-
-  String jwtToken = '';
-  String deviceId = ''; // RxString to hold device ID
-  String publicIp = '';
-  String Email = ''; // RxString to hold user's email
-  String Role = '';
-  // var workHoursByDate = {}.obs;// RxString to hold user's role
-
-  void setToken(String newToken) {
-    jwtToken = newToken;
-    decodeToken();
-  }
-
-  void decodeToken() {
-    try {
-      String? tokenValue = jwtToken; // Get the token value
-      if (tokenValue == null || tokenValue.isEmpty) {
-        throw Exception('Token is null or empty');
-      }
-      // Split the token into its parts: header, payload, and signature
-      List<String> parts = tokenValue.split('.');
-
-      // Ensure that the token has the expected number of parts (header, payload, signature)
-      if (parts.length != 3) {
-        throw Exception('Invalid token format');
-      }
-
-      // Decode the payload from base64Url encoding
-      String payload = parts[1];
-      String decodedPayload = utf8.decode(base64Url.decode(base64Url.normalize(payload)));
-
-      // Parse the JSON data in the payload
-      Map<String, dynamic> payloadData = jsonDecode(decodedPayload);
-
-      // Example of accessing data from the payload
-      String userId = payloadData['sub'] ?? ''; // User ID
-      String email = payloadData['email'] ?? '';
-      String role = payloadData['role'] ?? '';
-      String fullName = payloadData['name'] ?? '';
-      String username = payloadData['username'] ?? '';
-      int issuedAt = payloadData['iat'] ?? 0; // Issued at (timestamp)
-
-      // Print or use the decoded data
-      print('User ID: $userId');
-      print('Email: $email');
-      print('Role: $role');
-      print('Full Name: $fullName');
-      print('Username: $username');
-      print('Issued At: $issuedAt');
-
-      // Update RxString values
-      Email = email;
-      Role = role;
-
-      // Optionally, store the decoded data in variables or use them further in your application
-    } catch (e) {
-      print('Error decoding token: $e');
-      // Optionally handle errors or re-throw as needed
-    }
-  }
-
-  void clockInOut() async {
-    setState(() {
-      if (isClockedIn) {
-        clockOutTime = DateTime.now();
-        postClockOut().then((message) {
-          showResponseDialog(message);
-        }).catchError((error) {
-          print('Error during clock out: $error');
-          showResponseDialog('Failed to clock out');
-        });
-      } else {
-        clockInTime = DateTime.now();
-        postClockIn().then((message) {
-          showResponseDialog(message);
-        }).catchError((error) {
-          print('Error during clock in: $error');
-          showResponseDialog('Failed to clock in');
-        });
-      }
-      isClockedIn = !isClockedIn;
-    });
-  }
-
-  void getDeviceId() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    try {
-      if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        deviceId = androidInfo.id; // Update RxString with device ID
-        print('Device ID: ${deviceId}');
-      } else if (Platform.isIOS) {
-        // Handle iOS device info retrieval
-        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        deviceId = iosInfo.identifierForVendor ?? '';
-        print('Device ID: ${deviceId}');
-      }
-    } catch (e) {
-      print('Error retrieving device info: $e');
-    }
-  }
-
-  Future<void> postData(double latitude, double longitude) async {
-    try {
-      // Example of using Email or Role values in the POST data
-      Map<String, dynamic> data = {
-        'email': Email,
-        'role': Role,
-        'latitude': 37.4219983,
-        'longitude': -122.084,
-        'ip_addresses': ['103.17.159.50', '103.17.159.51'], // List of IP addresses
-      };
-
-      final response = await http.post(
-        Uri.parse("http://103.159.85.246:4000/api/salary/clock-ins"),
-        body: jsonEncode(data),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        var responseData = jsonDecode(response.body);
-        print('Data Added: $responseData');
-      } else {
-        print('Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error sending data: $e');
-    }
-  }
-
-
-  var datas;
-  Future<void> timeshit() async {
-    final requestData = {
-      'email': emailController.text.trim(),
-      'startDate': startDateController.text.toString(),
-      'endDate': endDateController.text.toString(),
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse("http://localhost:5000/api/salary/fetch-work-hours"),
-        body: jsonEncode(requestData),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-      );
-
-      if(response.statusCode==200)
-      {
-        datas=jsonDecode(response.body.toString());
-        print('Data:${datas}');
-      }
-
-    } catch (e) {
-      print('Exception during fetch operation: $e');
-    }
-  }
-
-
-
 }
 
 class TaskData {

@@ -3,17 +3,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../constant/conurl.dart';
 import '../create_lead.dart';
-import 'dashboard.dart';
+import 'admin_add_lead.dart';
+import 'admin_dashboard.dart';
 
-class LeadList extends StatefulWidget {
-  const LeadList({Key? key}) : super(key: key);
+class AdminLeadList extends StatefulWidget {
+  const AdminLeadList({Key? key}) : super(key: key);
 
   @override
-  State<LeadList> createState() => _LeadListState();
+  State<AdminLeadList> createState() => _AdminLeadListState();
 }
 
-class _LeadListState extends State<LeadList> {
+class _AdminLeadListState extends State<AdminLeadList> {
   List<dynamic> leads = [];
   ScrollController controller = ScrollController();
   bool isDeleteAlertOpen = false;
@@ -26,12 +28,12 @@ class _LeadListState extends State<LeadList> {
 
   void showList() async {
     final url = Uri.parse("http://103.159.85.246:4000/api/lead/leadList");
+
     try {
       final response = await http.get(
         url,
         headers: {
-          'Authorization':
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54',
+          'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc2MDUyfQ.BDHsJwZ5dP_LRp9HrII2A_LPw70-X9n-bC2Q7OtKcJQ',
         },
       );
 
@@ -91,7 +93,7 @@ class _LeadListState extends State<LeadList> {
 
   Future<void> performDelete(String id) async {
     try {
-      final url = Uri.parse("http://103.159.85.246:4000/api/lead/delete_lead");
+      final url = Uri.parse("http://localhost:5000/api/lead/delete_lead");
       final response = await http.post(url, body: {"id": id});
 
       if (response.statusCode == 200) {
@@ -115,25 +117,46 @@ class _LeadListState extends State<LeadList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xff7c81dd),
-        elevation: 0,
-        title: Text(
-          'Lead List',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0xFFFFD700),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 10,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen(),));
-          },
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: const Text(
+              'Lead List',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: AppString.appgraycolor),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddLead(id: '', task: ''),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
       body: SafeArea(
@@ -172,7 +195,7 @@ class _LeadListState extends State<LeadList> {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
-                          color: Color(0xff7c81dd),
+                          color: Color(0xFFFFD700),
                         ),
                         child: Row(
                           children: [
