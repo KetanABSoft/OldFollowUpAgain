@@ -303,8 +303,7 @@ class CustomListReceive extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ReceiveTask(
-                                        admin_type: admintype.toString()),
+                                    builder: (context) => ReceiveTaskScreen(),
                                   ),
                                 );
                               } else if (value == 'delete') {
@@ -326,8 +325,7 @@ class CustomListReceive extends StatelessWidget {
                                          Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ReceiveTask(
-                                        admin_type: admintype.toString()),
+                                    builder: (context) => ReceiveTaskScreen(),
                                   ),
                                 );
                                         },
@@ -408,8 +406,7 @@ class CustomListReceive extends StatelessWidget {
                                       Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ReceiveTask(
-                                        admin_type: admintype.toString()),
+                                    builder: (context) => ReceiveTaskScreen(),
                                   ),
                                 );
                                     },
@@ -429,8 +426,7 @@ class CustomListReceive extends StatelessWidget {
                             Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ReceiveTask(
-                                        admin_type: admintype.toString()),
+                                    builder: (context) => ReceiveTaskScreen(),
                                   ),
                                 );
                           }

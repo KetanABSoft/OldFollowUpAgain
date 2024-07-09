@@ -1340,16 +1340,13 @@ class _EditState extends State<Edit> with WidgetsBindingObserver {
                                     ? Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => ReceiveTask(
-                                              admin_type:
-                                                  '$admintype'), // Provide a default value if admintype is null
+                                          builder: (context) => ReceiveTaskScreen(), // Provide a default value if admintype is null
                                         ),
                                       )
                                     : Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => SendTask(
-                                              admin_type: '$admintype'),
+                                          builder: (context) => EmployeeSendTask(),
                                         ),
                                       );
                       }),

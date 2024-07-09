@@ -77,10 +77,14 @@ class _loginScreenState extends State<loginScreen> {
           'Content-Type': 'application/json; charset=utf-8',
         },
       );
-
       if (response.statusCode == 200) {
         data = jsonDecode(response.body);
+        String token = data['token'];
         print('Data Added: $data');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        String EmpToken = await prefs.getString("token") ?? "";
+        print("Token From API $EmpToken");
         return true; // Return 'success' if data is successfully added
       } else {
         print('Error: ${response.statusCode}');
@@ -91,6 +95,7 @@ class _loginScreenState extends State<loginScreen> {
       return false; // Return specific error message for exception
     }
   }
+
   Future login(String username, String password) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     //var urlString = 'http://testfollowup.absoftwaresolution.in/getlist.php?Type=login';
@@ -381,5 +386,66 @@ class _loginScreenState extends State<loginScreen> {
         ),
       ),
     );
+  }
+  String jwtToken = '';
+  String deviceId = ''; // RxString to hold device ID
+  String publicIp = '';
+  String Email = ''; // RxString to hold user's email
+  String Role = '';
+  void decodeToken() async {
+    try {
+      String? tokenValue = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDUwNzk0Mn0.TF-3O8qHeA2lr0JaCyDt-uBw6-a4u8O9FihrAESwk7k"; // Get the token value
+      if (tokenValue == null || tokenValue.isEmpty) {
+        throw Exception('Token is null or empty');
+      }
+      // Split the token into its parts: header, payload, and signature
+      List<String> parts = tokenValue.split('.');
+
+      // Ensure that the token has the expected number of parts (header, payload, signature)
+      if (parts.length != 3) {
+        throw Exception('Invalid token format');
+      }
+
+      // Decode the payload from base64Url encoding
+      String payload = parts[1];
+      String decodedPayload = utf8.decode(base64Url.decode(base64Url.normalize(payload)));
+
+      // Parse the JSON data in the payload
+      Map<String, dynamic> payloadData = jsonDecode(decodedPayload);
+
+      // Example of accessing data from the payload
+      String userId = payloadData['subEmployeeId'] ?? ''; // User ID
+      String email = payloadData['email'] ?? '';
+      String role = payloadData['role'] ?? '';
+      String fullName = payloadData['name'] ?? '';
+      String username = payloadData['username'] ?? '';
+      int issuedAt = payloadData['iat'] ?? 0; // Issued at (timestamp)
+
+      // Accessing 'id' from the payload data
+      String id = payloadData['id'] ?? '';
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('id', id);
+      await prefs.setString('role', role);
+      await prefs.setString('email', email);
+
+      // Print or use the decoded data
+      print('User ID: $userId');
+      print('Email: $email');
+      print('Role: $role');
+      print('Full Name: $fullName');
+      print('Username: $username');
+      print('Issued At: $issuedAt');
+      print('ID: $id'); // Printing the 'id' field from the payload
+
+      // Update RxString values
+      Email = email;
+      Role = role;
+
+      // Optionally, store the decoded data in variables or use them further in your application
+    } catch (e) {
+      print('Error decoding token: $e');
+      // Optionally handle errors or re-throw as needed
+    }
   }
 }

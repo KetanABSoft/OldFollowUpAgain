@@ -334,8 +334,7 @@ class CustomListSend extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => SendTask(
-                                            admin_type: admintype.toString()),
+                                        builder: (context) => EmployeeSendTask(),
                                       ),
                                     );
                                   } else if (value == 'delete') {
@@ -362,9 +361,7 @@ class CustomListSend extends StatelessWidget {
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      SendTask(
-                                                          admin_type: admintype
-                                                              .toString()),
+                                                      EmployeeSendTask(),
                                                 ),
                                               );
                                             },
@@ -481,9 +478,7 @@ class CustomListSend extends StatelessWidget {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => SendTask(
-                                                  admin_type:
-                                                      admintype.toString()),
+                                              builder: (context) => EmployeeSendTask(),
                                             ),
                                           );
                                         },
@@ -505,8 +500,7 @@ class CustomListSend extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SendTask(
-                                        admin_type: admintype.toString()),
+                                    builder: (context) => EmployeeSendTask(),
                                   ),
                                 );
                               } else if (value == 'share') {

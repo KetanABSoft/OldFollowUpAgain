@@ -127,73 +127,6 @@ Future<bool> onWillPopnew(BuildContext context) async {
 
 NotificationServices notificationServices = NotificationServices();
 
-// class TaskManagementApp extends StatelessWidget {
-//   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-//   bool _isExitConfirmed = false;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-//     // Navigator.pop(context, 'true');
-//     _firebaseMessaging.requestPermission(
-//       alert: true,
-//       badge: true,
-//       sound: true,
-//     );
-
-//     // });
-//     _firebaseMessaging.getToken().then((token) async {
-//       SharedPreferences preferences = await SharedPreferences.getInstance();
-
-//       preferences.setString("token", '$token');
-//       //print(token);
-//     });
-//     return WillPopScope(
-//       onWillPop: () => _onWillPop(context),
-//       child: MaterialApp(
-//         debugShowCheckedModeBanner: false,
-//         home: DashboardScreen(),
-//       ),
-//     );
-//   }
-
-//   Future<bool> _onWillPop(BuildContext context) async {
-//     if (_isExitConfirmed) {
-//       return true; // Allow the app to exit
-//     } else {
-//       final confirmExit = await showDialog<bool>(
-//         context: context,
-//         builder: (context) {
-//           return AlertDialog(
-//             title: Text('Exit App', style: TextStyle(fontFamily: 'Poppins')),
-//             content: Text('Do you want to exit the app?',
-//                 style: TextStyle(fontFamily: 'Poppins')),
-//             actions: <Widget>[
-//               TextButton(
-//                 onPressed: () => Navigator.of(context).pop(false),
-//                 child: Text('No', style: TextStyle(fontFamily: 'Poppins')),
-//               ),
-//               TextButton(
-//                 onPressed: () {
-//                   _isExitConfirmed = true;
-//                   Navigator.of(context).pop(true);
-//                 },
-//                 child: Text('Yes', style: TextStyle(fontFamily: 'Poppins')),
-//               ),
-//             ],
-//           );
-//         },
-//       );
-
-//       if (confirmExit == true) {
-//         return true; // Allow the app to exit
-//       } else {
-//         return false; // Stay on the dashboard page
-//       }
-//     }
-//   }
-// }
-
 class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -219,7 +152,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     });
     fetchlist();
     fcmtoken();
-
+    decodeToken();
     // onWillPop(context);
     //timer = Timer.periodic(Duration(minutes: 11111), (_) => fetchlist());
   }
@@ -248,12 +181,11 @@ class _DashboardScreenState extends State<DashboardScreen>
     });
   }
 
-  Future<void> fetchlist() async {
+  Future<void> fetchlists() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     userid = preferences.getString('id');
     cmpid = preferences.getString('cmpid');
     admintype = preferences.getString('admintype');
-    //String apiUrl = 'http://testfollowup.absoftwaresolution.in/getlist.php?Type=gettaskcount';
     String apiUrl = AppString.constanturl + 'gettaskcount';
     var response = await http.post(
       Uri.parse(apiUrl),
@@ -323,7 +255,75 @@ class _DashboardScreenState extends State<DashboardScreen>
     timer?.cancel();
     timer = null;
   }
+  Future<void> fetchlist() async {
+    String apiUrl = "http://103.159.85.246:4000/api/task/taskCounts";
+    var response = await http.post(
+      Uri.parse(apiUrl),
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        jsonData = jsonDecode(response.body);
+        String list = jsonData['alllist'];
+        String incompleted = jsonData['incompleted'];
+        String completed = jsonData['completed'];
+        String receive = jsonData['receive'];
+        String send = jsonData['send'];
+        double overdue = double.parse(jsonData['overdue'].toString());
 
+        try {
+          double doubleValue1 = double.parse(list);
+          double doubleValue2 = double.parse(completed);
+          double doubleValue3 = double.parse(receive);
+          double doubleValue4 = double.parse(send);
+          double doubleValue5 = double.parse(incompleted);
+          double doubleValue6 = overdue;
+
+          taskData[0] = TaskData(
+            taskName: 'Task',
+            taskValue: doubleValue1.isFinite ? doubleValue1 : 0,
+            taskColor: Colors.purple,
+          );
+          taskData[1] = TaskData(
+            taskName: 'Pending',
+            taskValue: doubleValue5.isFinite ? doubleValue5 : 0,
+            taskColor: Color.fromARGB(255, 77, 77, 174),
+          );
+          taskData[2] = TaskData(
+            taskName: 'Overdue',
+            taskValue: doubleValue6.isFinite ? doubleValue6 : 0,
+            taskColor: Color.fromARGB(
+              255, // Alpha component (fully opaque)
+              194, // Red component
+              24, // Green component
+              7, // Blue component
+            ),
+          );
+          taskData[3] = TaskData(
+            taskName: 'Completed',
+            taskValue: doubleValue2.isFinite ? doubleValue2 : 0,
+            taskColor: Color.fromARGB(255, 96, 175, 96),
+          );
+          taskData[4] = TaskData(
+            taskName: 'Send',
+            taskValue: doubleValue4.isFinite ? doubleValue4 : 0,
+            taskColor: Color.fromARGB(255, 230, 200, 32),
+          );
+          taskData[5] = TaskData(
+            taskName: 'Receive',
+            taskValue: doubleValue3.isFinite ? doubleValue3 : 0,
+            taskColor: Colors.orange,
+          );
+        } catch (e) {
+          print('Error parsing data: $e');
+          // Assign default values or handle the error as per your app's requirements
+        }
+      });
+    } else {
+      print('Error fetching data. Status code: ${response.statusCode}');
+    }
+    timer?.cancel();
+    timer = null;
+  }
   @override
   void dispose() {
     timer?.cancel();
@@ -397,15 +397,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     'Task Send',
     'Task Receive'
   ];
-  // final List<IconData> icons = [
-  //   Icons.task, // Total tasks icon
-  //   Icons.incomplete_circle, // Completed tasks icon
-  //   Icons.expand_more_outlined,
-  //   Icons.check, // Completed tasks icon
-  //   Icons.arrow_upward,
-  //   Icons.arrow_downward, // Received tasks icon
-  //   // Sent tasks icon
-  // ];
+
   final List<String> icons = [
     'assets/totaltask.png',
     'assets/Pendingtask.png',
@@ -522,7 +514,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReceiveTask(admin_type: admintype.toString()),
+        builder: (context) => ReceiveTaskScreen(),
       ),
    );
   }
@@ -531,7 +523,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SendTask(admin_type: admintype.toString()),
+        builder: (context) => EmployeeSendTask(),
       ),
     );
   }
@@ -572,7 +564,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                       'Task Management',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         color:Colors.white, // Set app bar text color to white
                         fontSize: 19,
                         fontWeight: FontWeight.bold,
@@ -660,7 +651,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                           title: Text(
                             '${items[index]}',
                             style: TextStyle(
-                              fontFamily: 'Poppins',
                               fontSize: 14, // Font size
                               fontWeight: FontWeight.bold, // Font weight
                               color: Colors.black, // Text color
@@ -669,7 +659,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                           trailing: Text(
                             '${taskData[index].taskValue.toInt()}',
                             style: TextStyle(
-                              fontFamily: 'Poppins',
                               fontSize: 16, // Font size
                               color: Colors.grey, // Text color
                               fontWeight: FontWeight.normal,
@@ -786,6 +775,8 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
     );
   }
+
+
   Future<String> postClockIn() async {
     Map<String, dynamic> data = {
       'email': 'tanaya@gmail.com',
@@ -817,7 +808,6 @@ class _DashboardScreenState extends State<DashboardScreen>
       return 'Failed to clock in'; // Return specific error message for exception
     }
   }
-
 
 
   Future<String> postClockOut() async {
@@ -870,13 +860,16 @@ class _DashboardScreenState extends State<DashboardScreen>
     jwtToken = newToken;
     decodeToken();
   }
-
-  void decodeToken() {
+  void decodeToken() async {
     try {
-      String? tokenValue = jwtToken; // Get the token value
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String EmpDecodeToken = await prefs.getString("token") ?? "";
+      print("Token From Decode API $EmpDecodeToken");
+      String? tokenValue = EmpDecodeToken; // Get the token value
       if (tokenValue == null || tokenValue.isEmpty) {
         throw Exception('Token is null or empty');
       }
+
       // Split the token into its parts: header, payload, and signature
       List<String> parts = tokenValue.split('.');
 
@@ -893,12 +886,17 @@ class _DashboardScreenState extends State<DashboardScreen>
       Map<String, dynamic> payloadData = jsonDecode(decodedPayload);
 
       // Example of accessing data from the payload
-      String userId = payloadData['sub'] ?? ''; // User ID
+      String userId = payloadData['subEmployeeId'] ?? ''; // User ID
       String email = payloadData['email'] ?? '';
       String role = payloadData['role'] ?? '';
       String fullName = payloadData['name'] ?? '';
       String username = payloadData['username'] ?? '';
       int issuedAt = payloadData['iat'] ?? 0; // Issued at (timestamp)
+
+
+      await prefs.setString('subEmployeeId', userId);
+      await prefs.setString('role', role);
+      await prefs.setString('email', email);
 
       // Print or use the decoded data
       print('User ID: $userId');
@@ -908,9 +906,18 @@ class _DashboardScreenState extends State<DashboardScreen>
       print('Username: $username');
       print('Issued At: $issuedAt');
 
+      // Print SharedPreferences values
+      String savedUserId = prefs.getString('subEmployeeId') ?? '';
+      String savedEmail = prefs.getString('email') ?? '';
+      String savedRole = prefs.getString('role') ?? '';
+
+      print('SharedPreferences - User ID: $savedUserId');
+      print('SharedPreferences - Email: $savedEmail');
+      print('SharedPreferences - Role: $savedRole');
+
       // Update RxString values
-      Email = email;
-      Role = role;
+      Email = savedEmail;
+      Role = savedRole;
 
       // Optionally, store the decoded data in variables or use them further in your application
     } catch (e) {
@@ -918,6 +925,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       // Optionally handle errors or re-throw as needed
     }
   }
+
 
   void clockInOut() async {
     setState(() {
@@ -947,7 +955,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     try {
       if (Platform.isAndroid) {
         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        deviceId = androidInfo.id; // Update RxString with device ID
+        deviceId = androidInfo.id;
         print('Device ID: ${deviceId}');
       } else if (Platform.isIOS) {
         // Handle iOS device info retrieval
@@ -989,8 +997,6 @@ class _DashboardScreenState extends State<DashboardScreen>
       print('Error sending data: $e');
     }
   }
-
-
   var datas;
   Future<void> timeshit() async {
     final requestData = {
@@ -998,7 +1004,6 @@ class _DashboardScreenState extends State<DashboardScreen>
       'startDate': startDateController.text.toString(),
       'endDate': endDateController.text.toString(),
     };
-
     try {
       final response = await http.post(
         Uri.parse("http://localhost:5000/api/salary/fetch-work-hours"),

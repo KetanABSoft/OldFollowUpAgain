@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../create_lead.dart';
 import 'dashboard.dart';
@@ -27,11 +28,14 @@ class _LeadListState extends State<LeadList> {
   void showList() async {
     final url = Uri.parse("http://103.159.85.246:4000/api/lead/leadList");
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String EmpGetLeadToken = await prefs.getString("token") ?? "";
+      print("Token From Completed API $EmpGetLeadToken");
       final response = await http.get(
         url,
         headers: {
           'Authorization':
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54',
+          EmpGetLeadToken,
         },
       );
 
@@ -93,7 +97,6 @@ class _LeadListState extends State<LeadList> {
     try {
       final url = Uri.parse("http://103.159.85.246:4000/api/lead/delete_lead");
       final response = await http.post(url, body: {"id": id});
-
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         if (jsonData['success'] == "success") {

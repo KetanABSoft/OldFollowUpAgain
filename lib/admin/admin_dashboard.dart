@@ -346,6 +346,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       {
         _handleAddTask(context);
       }
+
       else if (_currentIndex == 3) {
         _handleAddLead(context);
       } else if (_currentIndex == 4) {
@@ -360,7 +361,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   final List<TaskData> taskData = [
     TaskData(
       taskName: 'Task',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Colors.purple,
     ),
     TaskData(

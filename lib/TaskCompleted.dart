@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TaskCompletedScreen extends StatefulWidget {
   const TaskCompletedScreen({Key? key}) : super(key: key);
@@ -319,9 +320,12 @@ class _TaskCompletedScreenState extends State<TaskCompletedScreen> {
   var data;
   List<dynamic> completedTasks = [];
   Future<void> getApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String EmpCompleteToken = await prefs.getString("token") ?? "";
+    print("Token From Completed API $EmpCompleteToken");
     final response = await http.get(Uri.parse("http://103.159.85.246:4000/api/task/tasks/completedByEmp"),
     headers: {
-      "Authorization":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54"
+      "Authorization":EmpCompleteToken
     }
     );
     if(response.statusCode==200)

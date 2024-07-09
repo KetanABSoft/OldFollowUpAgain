@@ -31,6 +31,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
+import 'admin_pending_task.dart';
+
 bool isButtonEnabled = false;
 var pic;
 String? id;
@@ -1802,7 +1804,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                         ),
                       );
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return Taskincompleted();
+                        return AdminTaskincompleted();
                       },));
                     }
                     else

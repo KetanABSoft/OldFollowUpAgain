@@ -52,7 +52,6 @@ Timer? _toastTimer;
 var uuid = Uuid();
 var uniqueId = uuid.v1();
 
-
 class EmployeeAddTask extends StatefulWidget {
   final String audioPath;
   const EmployeeAddTask({
@@ -61,7 +60,8 @@ class EmployeeAddTask extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EmployeeAddTaskState createState() => _EmployeeAddTaskState(audioPath: audioPath);
+  _EmployeeAddTaskState createState() =>
+      _EmployeeAddTaskState(audioPath: audioPath);
 }
 
 class _EmployeeAddTaskState extends State<EmployeeAddTask> {
@@ -126,7 +126,6 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
         values.map((value) => value.toString()).toList();
     await preferences.setStringList('selectedValues', stringValues);
   }
-
   Future<List<dynamic>> getSelectedValuesFromPrefs() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     List<String>? stringValues = preferences.getStringList('selectedValues');
@@ -158,8 +157,12 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
     );
   }
 
-  void initState() {
+  void initState()  {
     super.initState();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String savedUserId = prefs.getString('subEmployeeId') ?? '';
+    // print('SharedPreferences From Init  - User ID: $savedUserId');
+
     getdata();
     fetchEmployees();
     //generateRandomNumber();
@@ -177,149 +180,19 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
     });
   }
 //void notification
-//   void savedata(String titlenew, String startdate, String deadlinedate, String starttime, String endtime) async {
-//     print('hii');
-//     print(titlenew);
-//     print(startdate);
-//     setState(() {
-//       isLoading = false; // Show loader
-//     });
-//     int num = 0;
-//     // DateTime currentDate = DateTime.now(); // Get the current date
-//     //String formattedDate = DateFormat('dd-MM-yyyy').format(currentDate); // Format the date
-//     if (titlenew.isEmpty || titlenew == Null) {
-//       num = 1;
-//       print('Title should be add');
-//       Fluttertoast.showToast(
-//         backgroundColor: Color.fromARGB(255, 255, 94, 0),
-//         textColor: Colors.white,
-//         msg: 'Title should be add',
-//         toastLength: Toast.LENGTH_SHORT,
-//       );
-//     } else if (dynamicValues == null || dynamicValues.isEmpty) {
-//       if (selectedValue == null || selectedValue.isEmpty) {
-//         num = 1;
-//         // dropdowntext= 'Please select at least one assign';
-//         print('Please select at least one assign');
-//         Fluttertoast.showToast(
-//           backgroundColor: Color.fromARGB(255, 255, 94, 0),
-//           textColor: Colors.white,
-//           msg: 'Please select at least one assign',
-//           toastLength: Toast.LENGTH_SHORT,
-//         );
-//       }
-//     } else {
-//       startContinuousToast();
-//       isButtonEnabled = true;
-//       num = 0;
-//     }
-//
-//     if (num == 0) {
-//       SharedPreferences preferences = await SharedPreferences.getInstance();
-//       userid = preferences.getString('id');
-//       cmpid = preferences.getString('cmpid');
-//
-//       admintype = preferences.getString('admintype');
-//
-//       if (selectedValue == null || selectedValue!.isEmpty) {
-//         selectedValue = dynamicValues;
-//       } else {
-//         selectedValue = selectedValue;
-//       }
-//       String commaSeparatedString = selectedValue.join(', ');
-//       //var urlString = 'http://testfollowup.absoftwaresolution.in/getlist.php?Type=addtask';
-//       var urlString = AppString.constanturl + 'addtask';
-//       Uri uri = Uri.parse(urlString);
-//
-//       var response = await http.post(uri, body: {
-//         "title": titlenew,
-//         "startdate": startdate,
-//         "deadlinedate": deadlinedate,
-//         "starttime": starttime,
-//         "endtime": endtime,
-//         "assign": commaSeparatedString,
-//         "company": cmpid,
-//         "createdby": userid,
-//         "admintype": admintype,
-//       });
-//       var jsonResponse = json.decode(response.body);
-//       if (jsonResponse is List) {
-//         // Handle the case when the response contains multiple IDs
-//         List<String> ids =
-//             jsonResponse.map((item) => item['id'].toString()).toList();
-//         for (int i = 0; i < ids.length; i++) {
-//           String id = ids[i];
-//           if (pic != '') {
-//             await sendimage([id]);
-//           } // Call the sendImage function with the ID
-//           await _uploadAudio(id);
-//           break;
-//         }
-//         setState(() {
-//           image = null;
-//           _selectedAudio = null;
-//           audio = null;
-//           selectedValue.clear();
-//           selectedValue = "";
-//           dynamicValues.clear;
-//           dynamicValues = "";
-//           stopContinuousToast();
-//         });
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => ListScreen(
-//               admin_type: admintype.toString(),
-//             ),
-//           ),
-//         );
-//         setState(() {
-//           isButtonEnabled = false;
-//           isLoading = false; // Hide loader after the operation is done
-//         });
-//         Fluttertoast.showToast(
-//           backgroundColor: const Color.fromARGB(255, 0, 255, 55),
-//           textColor: Colors.white,
-//           msg: 'Task Added Successfully',
-//           toastLength: Toast.LENGTH_SHORT,
-//         );
-//         //stopContinuousToast();
-//
-//         SharedPreferences preferences = await SharedPreferences.getInstance();
-//         preferences.remove('titleaudio');
-//         preferences.remove('startdateaudio');
-//         preferences.remove('deadlinedateaudio');
-//         preferences.remove('starttimeaudio');
-//         preferences.remove('endtimeaudio');
-//         preferences.remove('picaudio');
-//         preferences.remove('assigntoaudio');
-//         preferences.remove('selectedValues');
-//       } else if (jsonResponse is Map) {
-//         // Handle the case when the response contains a single ID
-//         String idAsString = jsonResponse['id'].toString();
-//         int id = int.tryParse(idAsString) ?? 0;
-//         print('map'); // Provide a default value if parsing fails
-//       } else {
-//         print('Invalid JSON response');
-//       }
-//     } else {}
-//   }
 
   var xyz;
-  Future<bool> addTask(
-    String titleText,
-    String startdateText,
-    String descroptionText,
-    String deadlinedateText,
-    String reminderDateText,
-    String starttimeText,
-    String endtimeText,
-    String remindertimeText,
-  ) async {
+
+  Future<bool> addTask(String titleText, String startdateText, String descroptionText, String deadlinedateText, String reminderDateText, String starttimeText, String endtimeText, String remindertimeText) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedId = prefs.getString('subEmployeeId');
+    String? storedRole = prefs.getString('role');
+    String? storedEmail = prefs.getString('email');
+    print("#### Ketan  ID $storedId");
     Map<String, dynamic> abc = {
       "title": title.text,
       "description": description.text,
-      "assignTo": ["66545e272c6f1c12159398a4"],
+      "assignTo": [storedId.toString()],
       "startDate": startdate.text,
       "deadlineDate": deadlinedate.text,
       "reminderDate": reminderDate.text,
@@ -327,22 +200,26 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
       "endTime": endtime.text,
       "reminderTime": remindertime.text,
       "status": "pending",
-      "assignedBy": "66545d952c6f1c121593988b"
+      "assignedBy": storedId.toString()
     };
+
+    print("## Ketan Map ${abc}");
+
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String EmpAddTaskToken = await prefs.getString("token") ?? "";
+      print("Token From Add Task API $EmpAddTaskToken");
       final response = await http.post(
         Uri.parse("http://103.159.85.246:4000/api/task/createSubemployeeTask"),
         body: jsonEncode(abc),
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
-          'Authorization':
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDAwOTI3Mn0.hIILOvUcqjYXQtuG_qx1gDcCqOoSiumuUKvVmuKWvmY',
+          'Authorization':EmpAddTaskToken, // Replace with your actual JWT token
         },
       );
-      print("12#####$response");
       if (response.statusCode == 201) {
         var xyz = jsonDecode(response.body);
-        print("###### $xyz");
+        print("###### decode $xyz");
         return true;
       } else {
         print('### Error: ${response.statusCode}');
@@ -353,6 +230,7 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
       return false; // Return specific error message for exception
     }
   }
+
 
   Future<void> requestStoragePermission() async {
     PermissionStatus status = await Permission.manageExternalStorage.request();
@@ -557,19 +435,6 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
               height: MediaQuery.of(context).size.height / 6,
               child: Column(
                 children: [
-                  // ElevatedButton(
-                  //   //if user click this button, user can upload image from gallery
-                  //   onPressed: () {
-                  //     Navigator.pop(context);
-                  //     sendImage(ImageSource.gallery);
-                  //   },
-                  //   child: Row(
-                  //     children: [
-                  //       Icon(Icons.image),
-                  //       Text('From Gallery'),
-                  //     ],
-                  //   ),
-                  // ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
@@ -609,18 +474,6 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
             height: MediaQuery.of(context).size.height / 6,
             child: Column(
               children: [
-                // ElevatedButton(
-                //   onPressed:()=>{
-                //     requestStoragePermission(),
-                //   Navigator.of(context).pop()},
-
-                //   child: Row(
-                //     children: [
-                //       Icon(Icons.audio_file),
-                //       Text('From Files'),
-                //     ],
-                //   ),
-                // ),
                 ElevatedButton(
                   onPressed: () {
                     // Handle audio recording
@@ -653,12 +506,7 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
     );
   }
 
-  //we can upload image from camera or from gallery based on parameter
-
-  //we can upload image from camera or from gallery based on parameter
-
   DateTime date = DateTime.now();
-
   //newdate = DateFormat('yyyy-MM-dd').format(dateTime);
   TimeOfDay time = TimeOfDay.now();
 
@@ -730,7 +578,11 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen(),));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DashboardScreen(),
+                ));
           },
         ),
       ),
@@ -1793,12 +1645,14 @@ class _EmployeeAddTaskState extends State<EmployeeAddTask> {
     final url =
         Uri.parse("http://103.159.85.246:4000/api/employee/subemployees/list");
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String EmpGetEmpToken = await prefs.getString("token") ?? "";
+      print("Token From Completed API $EmpGetEmpToken");
       final response = await http.get(
         url,
         headers: {
-          'Authorization':
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54', // Replace with your actual token
           'Content-Type': 'application/json',
+          "Authorization":EmpGetEmpToken
         },
       );
       if (response.statusCode == 200) {

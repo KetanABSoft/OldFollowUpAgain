@@ -18,9 +18,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   //FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
   FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
@@ -45,31 +45,13 @@ void main() async {
         (BuildContext context, Orientation orientation, DeviceType deviceType) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: id == null ? loginScreen() : loginScreen(),
+            home: id == null ? DashboardScreen() : DashboardScreen(),
+       //   home: id == null ? loginScreen(): loginScreen(),
       );
     },
   ));
 }
 
-// @pragma('vm:entry-point')
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   print('foreground message');
-//    await Firebase.initializeApp();
-//       //FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//           print(message.toString());
-//             try {
-//       Map<String, dynamic> data = message.data;
-//            notificationServices.showNotification(data);
-
-//       print(data.toString());
-//       // Handle the received message data
-//      // sendPushNotification(data);
-//     } catch (e) {
-//       print('Exception: $e');
-//     }
-//       // });
-//     //notificationServices.showNotification();
-// }
 @pragma('vm:entry-point')
 Future<void> _backgroundMessageHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -82,18 +64,6 @@ Future<void> _backgroundMessageHandler(RemoteMessage message) async {
     print('Exception: $e');
   }
 }
-// Future<void> backgroundMessageHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-
-//           try {
-//       Map<String, dynamic> data = message.data;
-//           notificationServices.showNotification(data);
-//            //notificationServices.showNotification(message);
-
-//     } catch (e) {
-//       print('Exception: $e');
-//     }
-// }
 
 NotificationServices notificationServices = NotificationServices();
 
@@ -106,15 +76,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: textmyapp(),
@@ -153,9 +114,6 @@ class textmyappnew extends State<textmyapp> {
   @override
   void initState() {
     super.initState();
-
-    // Run code required to handle interacted messages in an async function
-    // as initState() must not be async
     setupInteractedMessage();
   }
 
