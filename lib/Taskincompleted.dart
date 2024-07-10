@@ -17,10 +17,8 @@ class Taskincompleted extends StatefulWidget {
 }
 
 class _TaskincompletedState extends State<Taskincompleted> {
-  File? _selectedImage;
-  Uint8List? _image;
-  File? selectedIMage;
 
+  File? _pickedImage;
   @override
   void initState() {
     // TODO: implement initState
@@ -71,13 +69,13 @@ class _TaskincompletedState extends State<Taskincompleted> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(11),
-                    border: Border.all(color: Color.fromARGB(255, 77, 77, 174), width: 2),
+                    border: Border.all(color: Color(0xff7c81dd), width: 2),
                   ),
                   child: Column(
                     children: [
                       Container(
                         height: 50,
-                        color: Color.fromARGB(255, 77, 77, 174),
+                        color: Color(0xff7c81dd),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -127,31 +125,31 @@ class _TaskincompletedState extends State<Taskincompleted> {
                                 value: 'view',
                                 child: Text('View'),
                               ),
-                              const PopupMenuItem<String>(
-                                value: 'remark',
-                                child: Text('Remark'),
-                              ),
-                              const PopupMenuItem<String>(
-                                value: 'edit',
-                                child: Text('Update'),
-                              ),
+                              // const PopupMenuItem<String>(
+                              //   value: 'remark',
+                              //   child: Text('Remark'),
+                              // ),
+                              // const PopupMenuItem<String>(
+                              //   value: 'edit',
+                              //   child: Text('Update'),
+                              // ),
                               const PopupMenuItem<String>(
                                 value: 'complete',
                                 child: Text('Mark as Completed'),
                               ),
-                              const PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Text('Delete'),
-                              ),
+                              // const PopupMenuItem<String>(
+                              //   value: 'delete',
+                              //   child: Text('Delete'),
+                              // ),
                             ],
                             onSelected: (String value) {
                               if (value == 'view') {
                                 // Handle view action
-                              } else if (value == 'edit') {
-                                // Handle edit action
-                              } else if (value == 'delete') {
-                                // Handle delete action
-                              } else if (value == 'remark') {
+                              // } else if (value == 'edit') {
+                              //   // Handle edit action
+                              // } else if (value == 'delete') {
+                              //   // Handle delete action
+                              // } else if (value == 'remark') {
                                 // Handle remark action
                               } else if (value == 'complete') {
                                 // Handle complete action
@@ -281,30 +279,61 @@ class _TaskincompletedState extends State<Taskincompleted> {
             children: <Widget>[
               InkWell(
                 onTap: () {
-                   _pickImageFromCamera();
-                  Navigator.pop(context);
+                  _pickImageFromCamera();
                 },
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.camera_alt, size: 70),
-                    SizedBox(width: 10),
+                    SizedBox(width: 40),
                     Text("Camera"),
                   ],
                 ),
               ),
               SizedBox(height: 20),
+              if (_pickedImage != null)
+                Image.file(
+                  _pickedImage!,
+                  height: 200, // Adjust height as needed
+                ),
+              SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  // Handle other options if needed
-                  Navigator.pop(context);
+                onPressed: () async {
+                 bool success = await markTaskAsComplete();
+                 if(success)
+                   {
+                     markTaskAsComplete();
+                     Navigator.pop(context);
+                   }
+                 else
+                   {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         backgroundColor: Colors.red,
+                         content: Text('Task is Not Mark as Completed'),
+                         duration: Duration(seconds: 2),
+                         behavior: SnackBarBehavior.floating,
+                       ),
+                     );
+                   }
                 },
-                child: Text('Cancel'),
+                child: Text('Okay'),
               ),
             ],
           ),
         );
       },
     );
+  }
+  void _pickImageFromCamera() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.camera);
+    if (pickedImage != null) {
+      File pickedImageFile = File(pickedImage.path);
+      setState(() {
+        _pickedImage = pickedImageFile;
+      });
+    }
   }
   List<Task> pendingData =[];
   Future<List<Task>> pendingTask() async {
@@ -329,7 +358,6 @@ class _TaskincompletedState extends State<Taskincompleted> {
           {
             pendingData.add(Task.fromJson(index));
           }
-        
          print("@###@@$pendingData");
           return pendingData;
           
@@ -340,18 +368,38 @@ class _TaskincompletedState extends State<Taskincompleted> {
       throw Exception('Failed to fetch employees: $e');
     }
   }
-  Future _pickImageFromCamera() async {
-    final returnImage =
-    await ImagePicker().pickImage(source: ImageSource.camera);
-    if (returnImage == null) return;
-    setState(() {
-      selectedIMage = File(returnImage.path);
-      _image = File(returnImage.path).readAsBytesSync();
-    });
-    Navigator.of(context).pop();
+}
+
+Future<bool> markTaskAsComplete() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String MarksToken = await prefs.getString("token") ?? "";
+  print("Token From Pending API $MarksToken");
+  String AddTaskId = await prefs.getString("id") ?? "";
+  print("Id From AddTask  $AddTaskId");
+  try {
+    final response = await http.put(
+      Uri.parse('http://103.159.85.246:4000/api/task/complete/$AddTaskId'),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': MarksToken ?? '',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Task marked as complete successfully');
+      return true;
+    } else {
+      print('Failed to mark task as complete. Status code: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print('Exception during marking task as complete: $e');
+    return false;
   }
 }
-// task_model.dart
+
+
+
 
 class Task {
   String id;

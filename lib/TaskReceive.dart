@@ -187,13 +187,13 @@ Future<void> fetchDropdownData() async {
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(11),
-                      border: Border.all(color: Colors.green, width: 2),
+                      border: Border.all(color: Colors.pink, width: 2),
                     ),
                     child: Column(
                       children: [
                         Container(
                           height: 50,
-                          color:Colors.green,
+                          color:Colors.pink,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

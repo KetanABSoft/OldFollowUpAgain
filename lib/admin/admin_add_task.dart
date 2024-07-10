@@ -18,11 +18,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
-import '../Taskincompleted.dart';
-
-
-//import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:followup/notification_services.dart';
@@ -31,60 +26,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
+import 'admin_dashboard.dart';
 import 'admin_pending_task.dart';
 
 bool isButtonEnabled = false;
 var pic;
 String? id;
 var mainid;
-String? userid1;
-String? cmpid1;
-String? admintype1;
-String? titleaudio1;
-String? startdateaudio1;
-String? deadlinedateaudio1;
-String? starttimeaudio1;
-String? endtimeaudio1;
-List<dynamic>? assigntoaudio1;
-String? picaudio1;
+String? userid;
+String? cmpid;
+String? admintype;
+String? titleaudio;
+String? startdateaudio;
+String? deadlinedateaudio;
+String? starttimeaudio;
+String? endtimeaudio;
+List<dynamic>? assigntoaudio;
+String? picaudio;
 //String ?formattedEndDate;
 String dropdowntext = 'Please select at least one assign';
 Timer? _toastTimer;
 var uuid = Uuid();
 var uniqueId = uuid.v1();
 
-class TaskForm extends StatelessWidget {
-  final String audioPath;
-
-  TaskForm({
-    Key? key,
-    required this.audioPath,
-  }) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Follow Up',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: AdminAddTask(
-        audioPath: audioPath,
-      ),
-    );
-  }
-}
-
 class AdminAddTask extends StatefulWidget {
   final String audioPath;
-
   const AdminAddTask({
     Key? key,
     required this.audioPath,
   }) : super(key: key);
 
   @override
-  _AdminAddTaskState createState() => _AdminAddTaskState(audioPath: audioPath);
+  _AdminAddTaskState createState() =>
+      _AdminAddTaskState(audioPath: audioPath);
 }
 
 class _AdminAddTaskState extends State<AdminAddTask> {
@@ -104,7 +78,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
   bool isLoading = false;
   List<dynamic> dropdownData = [];
   List<dynamic> selectedData = [];
-  List<Employee>? employees;
+  // List<Employee>? employees;
   List<Employee> selectedEmployees = [];
   // Generate a version 4 UUID
 
@@ -149,7 +123,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
     values.map((value) => value.toString()).toList();
     await preferences.setStringList('selectedValues', stringValues);
   }
-
   Future<List<dynamic>> getSelectedValuesFromPrefs() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     List<String>? stringValues = preferences.getStringList('selectedValues');
@@ -181,8 +154,12 @@ class _AdminAddTaskState extends State<AdminAddTask> {
     );
   }
 
-  void initState() {
+  void initState()  {
     super.initState();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String savedUserId = prefs.getString('subEmployeeId') ?? '';
+    // print('SharedPreferences From Init  - User ID: $savedUserId');
+
     getdata();
     fetchEmployees();
     //generateRandomNumber();
@@ -191,174 +168,27 @@ class _AdminAddTaskState extends State<AdminAddTask> {
         selectedData = values;
       });
     });
-    // String currentTime =
-    // "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}:${date.second.toString().padLeft(2, '0')}";
     WidgetsBinding.instance!.addPostFrameCallback((_) {});
     fetchDropdownData();
     fetchEmployees().then((fetchedEmployees) {
       setState(() {
-        employees = fetchedEmployees;
+        employeess = fetchedEmployees;
       });
-    }).catchError((error) {
-      print('Error fetching employees: $error');
-      // Handle error as needed
     });
   }
-
 //void notification
-// void savedata(String titlenew, String startdate, String deadlinedate, String starttime, String endtime) async {
-// print('hii');
-// print(titlenew);
-// print(startdate);
-// setState(() {
-// isLoading = false; // Show loader
-// });
-// int num = 0;
-// // DateTime currentDate = DateTime.now(); // Get the current date
-// //String formattedDate = DateFormat('dd-MM-yyyy').format(currentDate); // Format the date
-// if (titlenew.isEmpty || titlenew == Null) {
-// num = 1;
-// print('Title should be add');
-// Fluttertoast.showToast(
-// backgroundColor: Color.fromARGB(255, 255, 94, 0),
-// textColor: Colors.white,
-// msg: 'Title should be add',
-// toastLength: Toast.LENGTH_SHORT,
-// );
-// } else if (dynamicValues == null || dynamicValues.isEmpty) {
-// if (selectedValue == null || selectedValue.isEmpty) {
-// num = 1;
-// // dropdowntext= 'Please select at least one assign';
-// print('Please select at least one assign');
-// Fluttertoast.showToast(
-// backgroundColor: Color.fromARGB(255, 255, 94, 0),
-// textColor: Colors.white,
-// msg: 'Please select at least one assign',
-// toastLength: Toast.LENGTH_SHORT,
-// );
-// }
-// } else {
-// startContinuousToast();
-// isButtonEnabled = true;
-// num = 0;
-// }
-//
-// if (num == 0) {
-// SharedPreferences preferences = await SharedPreferences.getInstance();
-// userid = preferences.getString('id');
-// cmpid = preferences.getString('cmpid');
-//
-// admintype = preferences.getString('admintype');
-//
-// if (selectedValue == null || selectedValue!.isEmpty) {
-// selectedValue = dynamicValues;
-// } else {
-// selectedValue = selectedValue;
-// }
-// String commaSeparatedString = selectedValue.join(', ');
-// //var urlString = 'http://testfollowup.absoftwaresolution.in/getlist.php?Type=addtask';
-// var urlString = AppString.constanturl + 'addtask';
-// Uri uri = Uri.parse(urlString);
-//
-// var response = await http.post(uri, body: {
-// "title": titlenew,
-// "startdate": startdate,
-// "deadlinedate": deadlinedate,
-// "starttime": starttime,
-// "endtime": endtime,
-// "assign": commaSeparatedString,
-// "company": cmpid,
-// "createdby": userid,
-// "admintype": admintype,
-// });
-// var jsonResponse = json.decode(response.body);
-// if (jsonResponse is List) {
-// // Handle the case when the response contains multiple IDs
-// List<String> ids =
-// jsonResponse.map((item) => item['id'].toString()).toList();
-// for (int i = 0; i < ids.length; i++) {
-// String id = ids[i];
-// if (pic != '') {
-// await sendimage([id]);
-// } // Call the sendImage function with the ID
-// await _uploadAudio(id);
-// break;
-// }
-// setState(() {
-// image = null;
-// _selectedAudio = null;
-// audio = null;
-// selectedValue.clear();
-// selectedValue = "";
-// dynamicValues.clear;
-// dynamicValues = "";
-// stopContinuousToast();
-// });
-// Navigator.push(
-// context,
-// MaterialPageRoute(
-// builder: (context) => ListScreen(
-// admin_type: admintype.toString(),
-// ),
-// ),
-// );
-// setState(() {
-// isButtonEnabled = false;
-// isLoading = false; // Hide loader after the operation is done
-// });
-// Fluttertoast.showToast(
-// backgroundColor: const Color.fromARGB(255, 0, 255, 55),
-// textColor: Colors.white,
-// msg: 'Task Added Successfully',
-// toastLength: Toast.LENGTH_SHORT,
-// );
-// //stopContinuousToast();
-//
-// SharedPreferences preferences = await SharedPreferences.getInstance();
-// preferences.remove('titleaudio');
-// preferences.remove('startdateaudio');
-// preferences.remove('deadlinedateaudio');
-// preferences.remove('starttimeaudio');
-// preferences.remove('endtimeaudio');
-// preferences.remove('picaudio');
-// preferences.remove('assigntoaudio');
-// preferences.remove('selectedValues');
-// } else if (jsonResponse is Map) {
-// // Handle the case when the response contains a single ID
-// String idAsString = jsonResponse['id'].toString();
-// int id = int.tryParse(idAsString) ?? 0;
-// print('map'); // Provide a default value if parsing fails
-// } else {
-// print('Invalid JSON response');
-// }
-// } else {}
-// }
 
   var xyz;
-  Future<bool> addTask(
-      String titleText,
-      String startdateText,
-      String descroptionText,
-      String deadlinedateText,
-      String reminderDateText,
-      String starttimeText,
-      String endtimeText,
-      String remindertimeText,
-      ) async {
-    // Extracting text values from TextEditingController instances
-    // String titleText = title.text;
-    // String descroptionText = description.text;
-    // String startdateText = startdate.text;
-    // String deadlinedateText = deadlinedate.text;
-    // String reminderDateText = reminderDate.text;
-    // String starttimeText = starttime.text;
-    // String endtimeText = endtime.text;
-    // String remindertimeText = remindertime.text;
-
+  Future<bool> addTask(String titleText, String startdateText, String descroptionText, String deadlinedateText, String reminderDateText, String starttimeText, String endtimeText, String remindertimeText,) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String getEmpId = await prefs.getString("_id") ?? "";
+    String? storedId = prefs.getString('employeeId');
+    print("###############%%%%%%%%%%%%%%%%%%%%$getEmpId");
+    print("#### Ketan  ID $storedId");
     Map<String, dynamic> abc = {
       "title": title.text,
       "description": description.text,
-      "assignTo": ["66545e272c6f1c12159398a4"],
+      "assignTo": [getEmpId.toString()],
       "startDate": startdate.text,
       "deadlineDate": deadlinedate.text,
       "reminderDate": reminderDate.text,
@@ -366,16 +196,18 @@ class _AdminAddTaskState extends State<AdminAddTask> {
       "endTime": endtime.text,
       "reminderTime": remindertime.text,
       "status": "pending",
-      "assignedBy": "66545d952c6f1c121593988b"
+      "assignedBy": storedId.toString()
     };
     try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? token = preferences.getString('token');
       final response = await http.post(
         Uri.parse("http://103.159.85.246:4000/api/task/create"),
         body: jsonEncode(abc),
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
-          'Authorization':
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc2MDUyfQ.BDHsJwZ5dP_LRp9HrII2A_LPw70-X9n-bC2Q7OtKcJQ',
+          'Authorization':"$token"
+          // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc2MDUyfQ.BDHsJwZ5dP_LRp9HrII2A_LPw70-X9n-bC2Q7OtKcJQ',
         },
       );
       print("12#####$response");
@@ -392,7 +224,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
       return false; // Return specific error message for exception
     }
   }
-
   Future<void> requestStoragePermission() async {
     PermissionStatus status = await Permission.manageExternalStorage.request();
 
@@ -409,10 +240,10 @@ class _AdminAddTaskState extends State<AdminAddTask> {
           title: Text('Permission Denied',
               style: TextStyle(fontFamily: 'Poppins')),
           content: Text('Please grant permission to access external storage.',
-              style: TextStyle(fontFamily: 'Poppins')),
+              style: TextStyle()),
           actions: <Widget>[
             ElevatedButton(
-              child: Text('OK', style: TextStyle(fontFamily: 'Poppins')),
+              child: Text('OK', style:TextStyle(fontFamily: 'Poppins')),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -423,13 +254,11 @@ class _AdminAddTaskState extends State<AdminAddTask> {
       _selectAudio();
     }
   }
-
   Future<void> sendimage(List<String> ids) async {
     if (image != null) {
       print(image!.path);
       // var uri = Uri.parse("http://testfollowup.absoftwaresolution.in/getlist.php?Type=addimage");
       var uri = Uri.parse(AppString.constanturl + "addimage");
-
       for (var id in ids) {
         // print('iddddd: $id');
         print(uniqueId);
@@ -458,30 +287,15 @@ class _AdminAddTaskState extends State<AdminAddTask> {
   //we can upload image from camera or from gallery based on parameter
   Future sendImage(ImageSource media) async {
     var img = await picker.pickImage(source: media);
-    // if (mounted) {
-    // // Check if the widget is still mounted
-    // setState(() {
-    // image = img;
-    // });
-    // }
-
-    // if (img != null) {
-    // pic = await http.MultipartFile.fromPath("image", img.path);
-
-    // }
-
     if (img != null) {
       XFile? compressedImage = await compressImage(XFile(img.path));
 
       setState(() {
-        // Update your state with the compressed image
         image = compressedImage;
       });
 
       if (compressedImage != null) {
         pic = await http.MultipartFile.fromPath("image", compressedImage.path);
-
-        // Continue with your HTTP request or other logic
       }
     }
   }
@@ -531,7 +345,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
     }
     if (_selectedAudio != null) {
       id = id;
-      //final url = Uri.parse('http://testfollowup.absoftwaresolution.in/getlist.php?Type=addaudio');
       final url = Uri.parse(AppString.constanturl + 'addaudio');
       var request = http.MultipartRequest('POST', url);
       request.files.add(
@@ -596,25 +409,11 @@ class _AdminAddTaskState extends State<AdminAddTask> {
               height: MediaQuery.of(context).size.height / 6,
               child: Column(
                 children: [
-                  // ElevatedButton(
-                  // //if user click this button, user can upload image from gallery
-                  // onPressed: () {
-                  // Navigator.pop(context);
-                  // sendImage(ImageSource.gallery);
-                  // },
-                  // child: Row(
-                  // children: [
-                  // Icon(Icons.image),
-                  // Text('From Gallery'),
-                  // ],
-                  // ),
-                  // ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                       Color(0xFFFFD700), // Set the button color to purple
                     ),
-                    //if user click this button. user can upload image from camera
                     onPressed: () {
                       Navigator.pop(context);
                       sendImage(ImageSource.camera);
@@ -648,18 +447,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
             height: MediaQuery.of(context).size.height / 6,
             child: Column(
               children: [
-                // ElevatedButton(
-                // onPressed:()=>{
-                // requestStoragePermission(),
-                // Navigator.of(context).pop()},
-
-                // child: Row(
-                // children: [
-                // Icon(Icons.audio_file),
-                // Text('From Files'),
-                // ],
-                // ),
-                // ),
                 ElevatedButton(
                   onPressed: () {
                     // Handle audio recording
@@ -692,12 +479,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
     );
   }
 
-  //we can upload image from camera or from gallery based on parameter
-
-  //we can upload image from camera or from gallery based on parameter
-
   DateTime date = DateTime.now();
-
   //newdate = DateFormat('yyyy-MM-dd').format(dateTime);
   TimeOfDay time = TimeOfDay.now();
 
@@ -721,13 +503,13 @@ class _AdminAddTaskState extends State<AdminAddTask> {
   Future<void> fetchDropdownData() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     userid = preferences.getString('id');
-    cmpid1 = preferences.getString('cmpid');
+    cmpid = preferences.getString('cmpid');
     admintype = preferences.getString('admintype');
     //String apiUrl = 'http://testfollowup.absoftwaresolution.in/getlist.php?Type=get_employee';
     String apiUrl = AppString.constanturl + 'get_employee';
     var response = await http.post(
       Uri.parse(apiUrl),
-      body: {'id': userid, 'cmpid': cmpid1, 'admintype': admintype},
+      body: {'id': userid, 'cmpid': cmpid, 'admintype': admintype},
     );
 
     if (response.statusCode == 200) {
@@ -752,35 +534,29 @@ class _AdminAddTaskState extends State<AdminAddTask> {
   Widget build(BuildContext context) {
     String audioPath = widget.audioPath;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Color(0xFFFFD700),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 10,
-                offset: Offset(0, 2),
-              ),
-            ],
+      appBar: AppBar(
+        backgroundColor: Color(0xFFFFD700),
+        elevation: 0,
+        title: Text(
+          'Add Task',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: const Text(
-              'Add Task',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            centerTitle: true,
-          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AdminDashboardScreen(),
+                ));
+          },
         ),
       ),
       body: SingleChildScrollView(
@@ -799,6 +575,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                   maxLines: null,
                   decoration: const InputDecoration(
                       labelText: 'Title',
+                      helperText: "",
                       labelStyle: TextStyle(
                         fontFamily: 'Poppins',
                         color: Colors.grey,
@@ -813,7 +590,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                         borderSide: BorderSide(color: Colors.black),
                       )),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 10.0),
                 TextFormField(
                   controller: description,
                   maxLines: null,
@@ -848,15 +625,15 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                 fontFamily: 'Poppins',
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              )),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7)))),
                           controller: startdate,
                           readOnly: true,
                           onTap: () async {
@@ -955,23 +732,21 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                 fontFamily: 'Poppins',
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              )),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7)))),
                           readOnly: true,
                           onTap: () async {
                             DateTime now = DateTime.now();
                             print("iwontcorrecttime");
-
                             DateFormat dateFormat = DateFormat(
                                 'dd-MM-yyyy'); // Format for the start date
-
                             DateTime selectedStartDate =
                             startdate.text.isNotEmpty
                                 ? dateFormat.parse(startdate.text)
@@ -984,11 +759,8 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                 initialTime: TimeOfDay.now(),
                                 context: context,
                               );
-
                               if (pickedTime != null) {
                                 DateTime now = DateTime.now();
-
-                                // Update the UI with the picked time
                                 String formattedTime =
                                 DateFormat('HH:mm:ss').format(
                                   DateTime(now.year, now.month, now.day,
@@ -1006,7 +778,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                     endtime.text = endTimenew;
                                   });
                                 });
-                                //}
                               } else {
                                 print("Time is not selected");
                               }
@@ -1014,13 +785,12 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                               TimeOfDay? pickedTime = await showTimePicker(
                                 initialTime: TimeOfDay.now(),
                                 context: context,
-                              );
 
+                              );
                               if (pickedTime != null) {
                                 DateTime now = DateTime.now();
                                 TimeOfDay currentTimeOfDay =
                                 TimeOfDay.fromDateTime(now);
-
                                 if (pickedTime.hour < currentTimeOfDay.hour ||
                                     (pickedTime.hour == currentTimeOfDay.hour &&
                                         pickedTime.minute <
@@ -1095,15 +865,15 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                 fontFamily: 'Poppins',
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              )),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7)))),
                           controller: deadlinedate,
                           readOnly: true,
                           onTap: () async {
@@ -1229,20 +999,20 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                 fontFamily: 'Poppins',
                                 color: Colors.grey,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              )),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7)))),
                           readOnly: true,
                           onTap: () async {
                             // TimeOfDay? pickedTime = await showTimePicker(
-                            // initialTime: TimeOfDay.now(),
-                            // context: context,
+                            //   initialTime: TimeOfDay.now(),
+                            //   context: context,
                             // );
 
                             DateTime now = DateTime.now();
@@ -1275,12 +1045,12 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                 );
 
                                 // Delay the execution of setState
-                                // // Delay the execution of setState
-                                // Future.delayed(Duration.zero, () {
+                                //   // Delay the execution of setState
+                                //    Future.delayed(Duration.zero, () {
                                 setState(() {
                                   endtime.text = formattedTime;
                                 });
-                                // });
+                                //  });
                               }
                             } else {
                               TimeOfDay? pickedTime = await showTimePicker(
@@ -1339,7 +1109,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                   );
 
                                   // Delay the execution of setState
-                                  // // Delay the execution of setState
+                                  //   // Delay the execution of setState
                                   Future.delayed(Duration.zero, () {
                                     setState(() {
                                       endtime.text = formattedTime;
@@ -1359,27 +1129,28 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                 SizedBox(height: 30.0),
                 Row(
                   children: [
-                    Flexible(
+                    Expanded(
                       child: Container(
                         height: 40,
                         child: TextFormField(
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.date_range),
+                          controller:
+                          reminderDate,
+                          decoration: InputDecoration(
+                              icon: Icon(Icons.date_range, size: 20),
                               labelText: 'Reminder Date',
                               labelStyle: TextStyle(
-                                fontFamily: 'Poppins',
-                                color: Colors.grey,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
+                                  fontFamily: 'Poppins',
+                                  color: Colors.black,
+                                  fontSize: 15),
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              )),
-                          controller: reminderDate,
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7)))),
                           readOnly: true,
                           onTap: () async {
                             DateTime? pickedDate = await showDatePicker(
@@ -1388,91 +1159,54 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                               firstDate: DateTime(1950),
                               lastDate: DateTime(2100),
                             );
-
                             if (pickedDate != null) {
                               DateTime currentDateWithoutTime = DateTime(
-                                  DateTime.now().year,
-                                  DateTime.now().month,
-                                  DateTime.now().day);
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                              );
                               DateTime pickedDateWithoutTime = DateTime(
-                                  pickedDate.year,
-                                  pickedDate.month,
-                                  pickedDate.day);
-                              DateTime startDate = DateFormat('yyyy-MM-dd')
-                                  .parse(startdate.text);
-                              print(DateFormat('HH:mm:ss')
-                                  .format(DateTime.now()));
+                                pickedDate.year,
+                                pickedDate.month,
+                                pickedDate.day,
+                              );
 
-                              // Check if pickedDate is after the curformattedTimerent date
-                              if (pickedDateWithoutTime
-                                  .isAfter(currentDateWithoutTime) ||
-                                  pickedDateWithoutTime.isAtSameMomentAs(
-                                      currentDateWithoutTime)) {
-                                // DateTime starttimenew=DateTime(int.parse(starttime.text));
-                                int starttimenew = int.parse(
-                                    starttime.text.split(":")[0] +
-                                        starttime.text.split(":")[1]);
-                                int endtimenew = int.parse(
-                                    endtime.text.split(":")[0] +
-                                        endtime.text.split(":")[1]);
+                              DateTime startDate =
+                              DateFormat('yyyy-MM-dd').parse(
+                                  startdate.text);
+                              DateTime endDate = DateFormat('yyyy-MM-dd')
+                                  .parse(deadlinedate.text);
 
-                                // DateTime endtimenew=DateTime(int.parse(endtime.text));
-
-                                DateTime now = DateTime.now();
-
-                                // Check if picked end date is after or equal to start date
-                                if (pickedDateWithoutTime.isAfter(startDate) ||
-                                    (pickedDateWithoutTime
-                                        .isAtSameMomentAs(startDate) &&
-                                        starttimenew <= endtimenew)) {
-                                  setState(() {
-                                    String formattedDate =
-                                    DateFormat('yyyy-MM-dd')
-                                        .format(pickedDate);
-                                    reminderDate.text = formattedDate;
-                                  });
-                                } else {
-                                  print("helllo1111");
-                                  // Display an error message for invalid end date
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text('Invalid End Date',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins')),
-                                        content: Text(
-                                            'End date time should be grater than start date time. Please select the correct date.',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins')),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('OK',
-                                                style: TextStyle(
-                                                    fontFamily: 'Poppins')),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                }
+                              if ((pickedDateWithoutTime
+                                  .isAfter(startDate) ||
+                                  pickedDateWithoutTime
+                                      .isAtSameMomentAs(startDate)) &&
+                                  (pickedDateWithoutTime
+                                      .isBefore(endDate) ||
+                                      pickedDateWithoutTime
+                                          .isAtSameMomentAs(endDate))) {
+                                setState(() {
+                                  reminderDate.text =
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(pickedDate);
+                                });
+                                SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                                await prefs.setString(
+                                    'reminderDate',
+                                    reminderDate.text);
                               } else {
-                                print("helllo666");
-                                // Display an error message for invalid date
                                 showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
-                                      title: Text('Invalid Date',
-                                          style:
-                                          TextStyle(fontFamily: 'Poppins')),
+                                      title: Text('Invalid Reminder Date',
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins')),
                                       content: Text(
-                                          'Please select the correct date.',
-                                          style:
-                                          TextStyle(fontFamily: 'Poppins')),
+                                          'Please select a date between the start date and end date.',
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins')),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -1492,93 +1226,98 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16.0),
-                    Flexible(
+                    SizedBox(width: 14),
+                    Expanded(
                       child: Container(
                         height: 40,
                         child: TextField(
-                          controller: remindertime,
-                          decoration: const InputDecoration(
-                              icon: Icon(Icons.timer),
+                          controller:
+                          remindertime,
+                          decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.timer,
+                                size: 25,
+                              ),
                               labelText: 'Reminder Time',
                               labelStyle: TextStyle(
-                                fontFamily: 'Poppins',
-                                color: Colors.grey,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
+                                  fontFamily: 'Poppins',
+                                  color: Colors.black,
+                                  fontSize: 15),
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              )),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(7)))),
                           readOnly: true,
                           onTap: () async {
-                            // TimeOfDay? pickedTime = await showTimePicker(
-                            // initialTime: TimeOfDay.now(),
-                            // context: context,
-                            // );
-                            //reminderDate
                             DateTime now = DateTime.now();
                             DateFormat dateFormat = DateFormat(
-                                'dd-MM-yyyy'); // Format for the start date
+                                'yyyy-MM-dd'); // Format for the start date
+
                             DateTime selectedStartDate =
                             startdate.text.isNotEmpty
-                                ? dateFormat.parse(startdate.text)
+                                ? dateFormat.parse(
+                                startdate.text)
                                 : DateTime(0);
                             DateTime selectedendtDate =
                             deadlinedate.text.isNotEmpty
-                                ? dateFormat.parse(deadlinedate.text)
+                                ? dateFormat.parse(
+                                deadlinedate.text)
                                 : DateTime(0);
                             print("justcheck");
                             print(selectedStartDate);
                             print(selectedendtDate);
-                            if (selectedendtDate.isAfter(selectedStartDate)) {
-                              TimeOfDay? pickedTime = await showTimePicker(
+                            if (selectedendtDate
+                                .isAfter(selectedStartDate)) {
+                              TimeOfDay? pickedTime =
+                              await showTimePicker(
                                 initialTime: TimeOfDay.now(),
                                 context: context,
                               );
                               if (pickedTime != null) {
                                 DateTime now = DateTime.now();
-
                                 String formattedTime =
                                 DateFormat('HH:mm:ss').format(
                                   DateTime(now.year, now.month, now.day,
                                       pickedTime.hour, pickedTime.minute),
                                 );
-
-                                // Delay the execution of setState
-                                // // Delay the execution of setState
-                                // Future.delayed(Duration.zero, () {
                                 setState(() {
                                   remindertime.text = formattedTime;
                                 });
-                                // });
+                                SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                                await prefs.setString(
+                                    'endTime', formattedTime);
                               }
                             } else {
-                              TimeOfDay? pickedTime = await showTimePicker(
+                              TimeOfDay? pickedTime =
+                              await showTimePicker(
                                 initialTime: TimeOfDay.now(),
                                 context: context,
                               );
                               if (pickedTime != null) {
-                                DateTime currentDateWithoutTime = DateTime(
+                                DateTime currentDateWithoutTime =
+                                DateTime(
                                     DateTime.now().year,
                                     DateTime.now().month,
                                     DateTime.now().day);
-
                                 DateTime now = DateTime.now();
                                 TimeOfDay currentTimeOfDay =
                                 TimeOfDay.fromDateTime(now);
                                 print(currentDateWithoutTime);
                                 DateTime selectedendtDate =
                                 deadlinedate.text.isNotEmpty
-                                    ? dateFormat.parse(deadlinedate.text)
+                                    ? dateFormat.parse(
+                                    deadlinedate.text)
                                     : DateTime(0);
-
-                                if ((pickedTime.hour < currentTimeOfDay.hour ||
-                                    (pickedTime.hour == currentTimeOfDay.hour &&
+                                if ((pickedTime.hour <
+                                    currentTimeOfDay.hour ||
+                                    (pickedTime.hour ==
+                                        currentTimeOfDay.hour &&
                                         pickedTime.minute <
                                             currentTimeOfDay.minute))) {
                                   // Show error dialog
@@ -1600,7 +1339,8 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                             },
                                             child: Text('OK',
                                                 style: TextStyle(
-                                                    fontFamily: 'Poppins')),
+                                                    fontFamily:
+                                                    'Poppins')),
                                           ),
                                         ],
                                       );
@@ -1609,12 +1349,13 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                                 } else {
                                   String formattedTime =
                                   DateFormat('HH:mm:ss').format(
-                                    DateTime(now.year, now.month, now.day,
-                                        pickedTime.hour, pickedTime.minute),
+                                    DateTime(
+                                        now.year,
+                                        now.month,
+                                        now.day,
+                                        pickedTime.hour,
+                                        pickedTime.minute),
                                   );
-
-                                  // Delay the execution of setState
-                                  // // Delay the execution of setState
                                   Future.delayed(Duration.zero, () {
                                     setState(() {
                                       endtime.text = formattedTime;
@@ -1631,6 +1372,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                     ),
                   ],
                 ),
+
                 SizedBox(height: 30.0),
                 Container(
                   decoration: BoxDecoration(
@@ -1650,8 +1392,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                             Text('Select Employee'),
                           ],
                         ),
-                        value:
-                        null, // Dropdown doesn't have a pre-selected value
+                        value: null, // Dropdown doesn't have a pre-selected value
                         onChanged: (Employee? employee) {
                           setState(() {
                             if (employee != null &&
@@ -1660,7 +1401,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                             }
                           });
                         },
-                        items: employees!.map((Employee employee) {
+                        items: employeess.map((Employee employee) {
                           return DropdownMenuItem<Employee>(
                             value: employee,
                             child: Text(employee.name),
@@ -1671,12 +1412,12 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                       Wrap(
                         spacing: 8.0,
                         runSpacing: 4.0,
-                        children: selectedEmployees.map((Employee employee) {
+                        children: selectedEmployees.map((Employee employeess) {
                           return Chip(
-                            label: Text(employee.name),
+                            label: Text(employeess.name),
                             onDeleted: () {
                               setState(() {
-                                selectedEmployees.remove(employee);
+                                selectedEmployees.remove(employeess);
                               });
                             },
                           );
@@ -1696,7 +1437,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                           backgroundColor: Color(0xFFFFD700),
                         ),
                         onPressed: () {
-                          //myAudio();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -1714,7 +1454,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                         child: const Text('Upload Audio',
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: AppString.appgraycolor,
+                              color: Colors.white,
                             )),
                       ),
                     ),
@@ -1730,7 +1470,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                         child: Text('Upload Photo',
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: AppString.appgraycolor,
+                              color: Colors.white,
                             )),
                       ),
                     ),
@@ -1743,7 +1483,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                     ? Text(path.basename(audioPath.toString()),
                     style: TextStyle(fontFamily: 'Poppins'))
                     : const Text(''),
-                const SizedBox(height: 10.0),
                 image != null
                     ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1753,18 +1492,20 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                       File(image!.path),
                       fit: BoxFit.cover,
                       width: MediaQuery.of(context).size.width,
-                      height: 100,
+                      height: 150,
                     ),
                   ),
                 )
-                    :
+                    : const SizedBox(
+                  height: 10,
+                ),
                 image != null
                     ? //Text(path.basename(image!.path),style: TextStyle(fontFamily: 'Poppins'))
                 Text('')
                     : const Text(''),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFD700),
+                    backgroundColor:Color(0xFFFFD700),
                   ),
                   onPressed: isButtonEnabled
                       ? null
@@ -1799,20 +1540,22 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.green,
-                          content: Text(' Congratulation Task is Cretaed '),
+                          content:
+                          Text(' Congratulation Task is Cretaed '),
                           duration: Duration(seconds: 3),
                         ),
                       );
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return AdminTaskincompleted();
-                      },));
-                    }
-                    else
-                    {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return AdminTaskincompleted();
+                        },
+                      ));
+                    } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.red,
-                          content: Text('Task is Not Cretaed Yet Please Fill All Fields Carefully'),
+                          content: Text(
+                              'Task is Not Cretaed Yet Please Fill All Fields Carefully'),
                           duration: Duration(seconds: 3),
                         ),
                       );
@@ -1823,7 +1566,7 @@ class _AdminAddTaskState extends State<AdminAddTask> {
                       : Text('Save',
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        color: AppString.appgraycolor,
+                        color: Colors.white,
                       )),
                 ),
               ],
@@ -1833,24 +1576,34 @@ class _AdminAddTaskState extends State<AdminAddTask> {
       ),
     );
   }
-
+  List<Employee> employeess = [];
   Future<List<Employee>> fetchEmployees() async {
-    final url =
-    Uri.parse("http://103.159.85.246:4000/api/employee/subemployees/list");
+    final url = Uri.parse("http://103.159.85.246:4000/api/employee/subemployees/list");
     try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      String? token = preferences.getString('token');
+
       final response = await http.get(
         url,
         headers: {
-          'Authorization':
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJFbXBsb3llZUlkIjoiNjY1NDVlMjcyYzZmMWMxMjE1OTM5OGE0IiwiZW1haWwiOiJ0YW5heWFAZ21haWwuY29tIiwicm9sZSI6InN1Yi1lbXBsb3llZSIsImFkbWluQ29tcGFueU5hbWUiOiJBY21lIiwibmFtZSI6IlRhbmF5YSIsImlhdCI6MTcyMDA4NDQ3Mn0.k3OIKIwkGRTqIPZDZBXPnW1trisnOdACBhFkNUchc54', // Replace with your actual token
           'Content-Type': 'application/json',
+          'Authorization': "$token",
         },
       );
+      var data = jsonDecode(response.body.toString());
       if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        List<Employee> employees =
-        data.map((json) => Employee.fromJson(json)).toList();
-        return employees;
+        employeess.clear();
+        for (var index in data) {
+          String employeeId = index["_id"];
+          // Check if employee with this ID already exists in the list
+          bool employeeExists = employeess.any((emp) => emp.id == employeeId);
+          if (!employeeExists) {
+            employeess.add(Employee.fromJson(index));
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('_id', employeeId);
+          }
+        }
+        return employeess;
       } else {
         throw Exception('Failed to fetch employees');
       }
@@ -1859,7 +1612,6 @@ class _AdminAddTaskState extends State<AdminAddTask> {
     }
   }
 }
-
 class Employee {
   String id;
   String name;
@@ -1909,10 +1661,3 @@ class TaskTextField extends StatelessWidget {
     );
   }
 }
-
-// void main() {
-// runApp(MaterialApp(
-// home: TaskForm(
-// audioPath: AppString.audiourl,
-// )));
-// }

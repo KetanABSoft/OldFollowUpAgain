@@ -38,15 +38,15 @@ void main() async {
 
   DateTime currentTime = DateTime.now();
   preferences.setString('currentTime', currentTime.toString());
-
   var id = preferences.getString('id');
   runApp(Sizer(
     builder:
         (BuildContext context, Orientation orientation, DeviceType deviceType) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-            home: id == null ? DashboardScreen() : DashboardScreen(),
-       //   home: id == null ? loginScreen(): loginScreen(),
+                  // home: id == null ? CameraScreen() : CameraScreen(),
+                  //   home: id == null ? EmployeeAddTask(audioPath: '',): EmployeeAddTask(audioPath: '',),
+                     home: id == null ? loginScreen(): loginScreen(),
       );
     },
   ));

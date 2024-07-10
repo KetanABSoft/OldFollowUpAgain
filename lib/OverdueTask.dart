@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -146,7 +147,7 @@ class _OverdueTask extends State<OverdueTask> {
           'Error fetching dropdown data. Status code: ${response.statusCode}');
     }
   }
-
+  File? _pickedImage;
   @override
   void initState() {
     super.initState();
@@ -437,23 +438,42 @@ class _OverdueTask extends State<OverdueTask> {
               InkWell(
                 onTap: () {
                   _pickImageFromCamera();
-                  Navigator.pop(context);
                 },
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.camera_alt, size: 70),
-                    SizedBox(width: 10),
+                    SizedBox(width: 40),
                     Text("Camera"),
                   ],
                 ),
               ),
               SizedBox(height: 20),
+              if (_pickedImage != null)
+                Image.file(
+                  _pickedImage!,
+                  height: 200, // Adjust height as needed
+                ),
+              SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  // Handle other options if needed
-                  Navigator.pop(context);
+                onPressed: () async {
+                  bool success = await markTaskAsComplete();
+                  if(success)
+                  {
+                    markTaskAsComplete();
+                    Navigator.pop(context);
+                  }
+                  else
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Task is Not Mark as Completed'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
                 },
-                child: Text('Cancel'),
+                child: Text('Okay'),
               ),
             ],
           ),
@@ -461,13 +481,42 @@ class _OverdueTask extends State<OverdueTask> {
       },
     );
   }
+  void _pickImageFromCamera() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.camera);
+    if (pickedImage != null) {
+      File pickedImageFile = File(pickedImage.path);
+      setState(() {
+        _pickedImage = pickedImageFile;
+      });
+    }
+  }
+  Future<bool> markTaskAsComplete() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String MarksToken = await prefs.getString("token") ?? "";
+    print("Token From Pending API $MarksToken");
+    String AddTaskId = await prefs.getString("id") ?? "";
+    print("Id From AddTask  $AddTaskId");
+    try {
+      final response = await http.put(
+        Uri.parse('http://103.159.85.246:4000/api/task/complete/$AddTaskId'),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': MarksToken ?? '',
+        },
+      );
 
-  Future<void> _pickImageFromCamera() async {
-    final XFile? returnImage = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (returnImage == null) return;
-    setState(() {
-      // Handle the selected image
-    });
+      if (response.statusCode == 200) {
+        print('Task marked as complete successfully');
+        return true;
+      } else {
+        print('Failed to mark task as complete. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception during marking task as complete: $e');
+      return false;
+    }
   }
   var overduedata;
   List<dynamic> overdueTasks = [];

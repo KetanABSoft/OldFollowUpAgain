@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../constant/conurl.dart';
@@ -82,224 +83,224 @@ class _AdminTaskincompletedState extends State<AdminTaskincompleted> {
               future:pendingTask(),
               builder: (context , snapshot){
                 if(snapshot.hasData)
-                  {
-                    return Expanded(
-                      child: ListView.builder(
-                        itemCount: pendingData.length,
-                        itemBuilder: (context, index) {
-                          var startDate = DateTime.parse(pendingData[index].startDate.toString());
-                          var formattedStartDate =
-                          DateFormat('yyyy-MM-dd').format(startDate);
-                          var endDate = DateTime.parse(pendingData[index].deadlineDate.toString());
-                          var formattedEndDate =
-                          DateFormat('yyyy-MM-dd').format(endDate);
-                          return Padding(
-                            padding: EdgeInsets.only(top: 15),
-                            child: Container(
-                              height: 200,
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(11),
-                                border: Border.all(color: Color(0xFFFFD700), width: 2),
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 50,
-                                    color: Color(0xFFFFD700),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 10),
-                                          child: Text(
-                                            "${pendingData[index].status}",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(right: 10),
-                                          child: Text(
-                                            "Assign By",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 5),
-                                  Row(
+                {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: pendingData.length,
+                      itemBuilder: (context, index) {
+                        var startDate = DateTime.parse(pendingData[index].startDate.toString());
+                        var formattedStartDate =
+                        DateFormat('yyyy-MM-dd').format(startDate);
+                        var endDate = DateTime.parse(pendingData[index].deadlineDate.toString());
+                        var formattedEndDate =
+                        DateFormat('yyyy-MM-dd').format(endDate);
+                        return Padding(
+                          padding: EdgeInsets.only(top: 15),
+                          child: Container(
+                            height: 200,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(11),
+                              border: Border.all(color: Color(0xFFFFD700), width: 2),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 50,
+                                  color: Color(0xFFFFD700),
+                                  child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Padding(
                                         padding: EdgeInsets.only(left: 10),
                                         child: Text(
-                                          "${pendingData[index].title}",
+                                          "${pendingData[index].status}",
                                           style: TextStyle(
-                                            color: Colors.black,
+                                            color: Colors.white,
                                             fontSize: 18,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ),
-                                      PopupMenuButton<String>(
-                                        itemBuilder: (BuildContext context) => [
-                                          const PopupMenuItem<String>(
-                                            value: 'view',
-                                            child: Text('View'),
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 10),
+                                        child: Text(
+                                          "Assign By",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
                                           ),
-                                          const PopupMenuItem<String>(
-                                            value: 'remark',
-                                            child: Text('Remark'),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        "${pendingData[index].title}",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    PopupMenuButton<String>(
+                                      itemBuilder: (BuildContext context) => [
+                                        const PopupMenuItem<String>(
+                                          value: 'view',
+                                          child: Text('View'),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'remark',
+                                          child: Text('Remark'),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: Text('Update'),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'complete',
+                                          child: Text('Mark as Completed'),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: Text('Delete'),
+                                        ),
+                                      ],
+                                      onSelected: (String value) {
+                                        if (value == 'view') {
+                                          // Handle view action
+                                        } else if (value == 'edit') {
+                                          // Handle edit action
+                                        } else if (value == 'delete') {
+                                          // Handle delete action
+                                        } else if (value == 'remark') {
+                                          // Handle remark action
+                                        } else if (value == 'complete') {
+                                          // Handle complete action
+                                          _showImagePickerOptions();
+                                        }
+                                      },
+                                      icon: Icon(Icons.more_vert),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Divider(color: Colors.grey, thickness: 2),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Icon(Icons.calendar_today_outlined, size: 18),
                                           ),
-                                          const PopupMenuItem<String>(
-                                            value: 'edit',
-                                            child: Text('Update'),
-                                          ),
-                                          const PopupMenuItem<String>(
-                                            value: 'complete',
-                                            child: Text('Mark as Completed'),
-                                          ),
-                                          const PopupMenuItem<String>(
-                                            value: 'delete',
-                                            child: Text('Delete'),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              formattedStartDate,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 15,
+                                              ),
+                                            ),
                                           ),
                                         ],
-                                        onSelected: (String value) {
-                                          if (value == 'view') {
-                                            // Handle view action
-                                          } else if (value == 'edit') {
-                                            // Handle edit action
-                                          } else if (value == 'delete') {
-                                            // Handle delete action
-                                          } else if (value == 'remark') {
-                                            // Handle remark action
-                                          } else if (value == 'complete') {
-                                            // Handle complete action
-                                            _showImagePickerOptions();
-                                          }
-                                        },
-                                        icon: Icon(Icons.more_vert),
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                  Divider(color: Colors.grey, thickness: 2),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Icon(Icons.calendar_today_outlined, size: 18),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Text(
-                                                formattedStartDate,
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 15,
-                                                ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Icon(Icons.watch_later_outlined, size: 18),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              "${pendingData[index].startTime}",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 15,
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Icon(Icons.watch_later_outlined, size: 18),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Text(
-                                                "${pendingData[index].startTime}",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 15,
-                                                ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Icon(Icons.calendar_today_outlined, size: 18),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              formattedEndDate,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 15,
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Icon(Icons.calendar_today_outlined, size: 18),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Text(
-                                                formattedEndDate,
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 15,
-                                                ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Icon(Icons.watch_later_outlined, size: 18),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              "${pendingData[index].endTime}",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 15,
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Icon(Icons.watch_later_outlined, size: 18),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 10),
-                                              child: Text(
-                                                "${pendingData[index].endTime}",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                      ),
-                    );
-                  }
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }
                 else
-                  {
-                    return Center(child: CircularProgressIndicator());
-                  }
+                {
+                  return Center(child: CircularProgressIndicator());
+                }
 
               },
 
@@ -348,14 +349,17 @@ class _AdminTaskincompletedState extends State<AdminTaskincompleted> {
   }
   List<Task> pendingData =[];
   Future<List<Task>> pendingTask() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? token = preferences.getString('token');
+
     final url =
     Uri.parse("http://103.159.85.246:4000/api/task/tasks/pending");
     try {
       final response = await http.get(
         url,
         headers: {
-          'Authorization':
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc2MDUyfQ.BDHsJwZ5dP_LRp9HrII2A_LPw70-X9n-bC2Q7OtKcJQ', // Replace with your actual token
+          'Authorization':'$token',
+          // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc2MDUyfQ.BDHsJwZ5dP_LRp9HrII2A_LPw70-X9n-bC2Q7OtKcJQ', // Replace with your actual token
           'Content-Type': 'application/json; charset=utf-8',
         },
       );

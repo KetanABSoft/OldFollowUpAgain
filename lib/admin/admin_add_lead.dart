@@ -42,6 +42,10 @@ class _AddLeadState extends State<AddLead> {
   var data1;
 
   Future<bool> addlead() async {
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? token = preferences.getString('token');
+
     Map<String, dynamic> abc = {
       'customerName': CustomerName.text.trim(),
       'companyName':CompanyName.text.trim(),
@@ -58,7 +62,8 @@ class _AddLeadState extends State<AddLead> {
         body: jsonEncode(abc),
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
-          'Authorization': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc4NTg2fQ.DwgB3sYlRQo-1J1TZghAoELmfvzXHBLy634owaRDTIo",
+          'Authorization':"$token"
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc4NTg2fQ.DwgB3sYlRQo-1J1TZghAoELmfvzXHBLy634owaRDTIo",
         },
       );
 
@@ -87,7 +92,8 @@ class _AddLeadState extends State<AddLead> {
         body: jsonEncode(abc),
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
-          'Authorization': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc2MDUyfQ.BDHsJwZ5dP_LRp9HrII2A_LPw70-X9n-bC2Q7OtKcJQ",
+          'Authorization': "$token"
+          // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc2MDUyfQ.BDHsJwZ5dP_LRp9HrII2A_LPw70-X9n-bC2Q7OtKcJQ",
         },
       );
 
@@ -734,26 +740,26 @@ class _AddLeadState extends State<AddLead> {
                                               .validate()) {
                                             bool success = await addlead();
                                             if(success)
-                                              {
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    backgroundColor: Colors.green,
-                                                    content: Text('Lead is Created Succesfully'),
-                                                    duration: Duration(seconds: 3),
-                                                  ),
-                                                );
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) => AdminLeadList(),));
-                                              }
-                                          else
-                                          {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                backgroundColor: Colors.red,
-                                                content: Text('Lead is not created please Fill all Fields'),
-                                                duration: Duration(seconds: 2),
-                                              ),
-                                            );
-                                          }
+                                            {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  backgroundColor: Colors.green,
+                                                  content: Text('Lead is Created Succesfully'),
+                                                  duration: Duration(seconds: 3),
+                                                ),
+                                              );
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => AdminLeadList(),));
+                                            }
+                                            else
+                                            {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  backgroundColor: Colors.red,
+                                                  content: Text('Lead is not created please Fill all Fields'),
+                                                  duration: Duration(seconds: 2),
+                                                ),
+                                              );
+                                            }
                                           }
                                         }),
                                   ),

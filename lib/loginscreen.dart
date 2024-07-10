@@ -35,6 +35,7 @@ class _loginScreenState extends State<loginScreen> {
   TextEditingController passwordcontroller =TextEditingController();
 
   var dataa;
+
   Future<bool> AdminLogin() async {
     Map<String, dynamic> abc = {
       'email': usernamecontroller.text.trim(),
@@ -50,15 +51,28 @@ class _loginScreenState extends State<loginScreen> {
       );
 
       if (response.statusCode == 200) {
-        dataa = jsonDecode(response.body);
+        // Parse the response JSON
+        var responseData = jsonDecode(response.body);
+        dataa = responseData;
         print('Data Added: $dataa');
-        return true; // Return 'success' if data is successfully added
+
+        // Store token and email in SharedPreferences
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        String token = responseData['token'];
+        String email = abc['email']; // Retrieve email from the form data
+        await preferences.setString('token', token);
+        await preferences.setString('email', email); // Store email
+
+        print("Token stored admin: $token");
+        print("Email stored admin: $email");
+
+        return true; // Return 'success' if login is successful
       } else {
         print('Error: ${response.statusCode}');
         return false; // Return specific error message for failed response
       }
     } catch (e) {
-      print('Exception during add operation: $e');
+      print('Exception during login operation: $e');
       return false; // Return specific error message for exception
     }
   }
@@ -163,13 +177,6 @@ class _loginScreenState extends State<loginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Lottie.network(
-                  //     // 'https://assets6.lottiefiles.com/private_files/lf30_ulp9xiqw.json', //shakeing lock
-                  //     'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Flogin_6681204&psig=AOvVaw1U-9NZstj6-lwsTE_gu2cQ&ust=1687265068694000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCMjL37uuz_8CFQAAAAAdAAAAABAK',
-                  //     animate: true,
-                  //     height: 120,
-                  //     width: 600),
-                  // logo here
                   Image.asset(
                     'assets/loginlogo.jpeg',
                     height: 120,
@@ -187,13 +194,6 @@ class _loginScreenState extends State<loginScreen> {
 
                   Text('Please login to continue using our app',
                       style: TextStyle(fontFamily: 'Poppins')
-                      // style: GoogleFonts.indieFlower(
-                      //   textStyle: TextStyle(
-                      //       color: Colors.black.withOpacity(0.5),
-                      //       fontWeight: FontWeight.w300,
-                      //       // height: 1.5,
-                      //       fontSize: 15),
-                      // ),
                       ),
 
                   const SizedBox(
@@ -239,10 +239,6 @@ class _loginScreenState extends State<loginScreen> {
                               labelStyle: TextStyle(
                                 color: (AppString.appgraycolor),
                               ),
-                              // suffixIcon: IconButton(
-                              //     onPressed: () {},
-                              //     icon: Icon(Icons.close,
-                              //         color: Colors.purple))
                             ),
                           ),
                         ),
@@ -274,14 +270,6 @@ class _loginScreenState extends State<loginScreen> {
                                 labelStyle:
                                     TextStyle(color: AppString.appgraycolor),
                               ),
-                              // validator: (value) {
-                              //   if (value!.isEmpty && value!.length < 5) {
-                              //     return 'Enter a valid password';
-                              //     {
-                              //       return null;
-                              //     }
-                              //   }
-                              // },
                             ),
                           ),
                         ),

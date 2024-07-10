@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddEmployeeController extends GetxController {
   TextEditingController usernameController = TextEditingController();
@@ -19,6 +20,10 @@ class AddEmployeeController extends GetxController {
     String company = companyController.text.trim();
     String mobileNo = mobileNoController.text.trim();
 
+    // Retrieve token from SharedPreferences
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? token = preferences.getString('token');
+
     Map<String, dynamic> abc = {
       'name': username,
       'email': email,
@@ -33,7 +38,7 @@ class AddEmployeeController extends GetxController {
         body: jsonEncode(abc),
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
-          'Authorization': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc4NTg2fQ.DwgB3sYlRQo-1J1TZghAoELmfvzXHBLy634owaRDTIo",
+          'Authorization': ' $token', // Include token in Authorization header
         },
       );
 
@@ -51,6 +56,7 @@ class AddEmployeeController extends GetxController {
       return false; // Return false on exception
     }
   }
+
   var data1;
 
   Future<bool> addSeller(String s) async {
@@ -59,6 +65,10 @@ class AddEmployeeController extends GetxController {
     String password = passwordController.text.trim();
     String company = companyController.text.trim();
     String mobileNo = mobileNoController.text.trim();
+
+    // Retrieve token from SharedPreferences
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? token = preferences.getString('token');
 
     Map<String, dynamic> abc = {
       'name': username,
@@ -75,13 +85,13 @@ class AddEmployeeController extends GetxController {
         body: jsonEncode(abc),
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
-          'Authorization': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZhcmFkQGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImFkbWluVXNlcklkIjoiNjY1NDVkMmEyYzZmMWMxMjE1OTM5ODgxIiwiYWRtaW5Db21wYW55TmFtZSI6IkFjbWUiLCJlbXBsb3llZUlkIjoiNjY1NDVkOTUyYzZmMWMxMjE1OTM5ODhiIiwibmFtZSI6IlZhcmFkIiwiaWF0IjoxNzIwMDc4NTg2fQ.DwgB3sYlRQo-1J1TZghAoELmfvzXHBLy634owaRDTIo",
+          'Authorization': ' $token', // Include token in Authorization header
         },
       );
 
       if (response.statusCode == 201) {
         data1 = jsonDecode(response.body);
-        print('#### Data Added: $data');
+        print('#### Data Added: $data1');
         return true; // Return true on successful response
       } else {
         print('Error: ${response.statusCode}');

@@ -24,16 +24,6 @@ import 'TaskSend.dart';
 import 'package:flutter/services.dart';
 import 'package:followup/Notifications_screen.dart';
 
-// import 'package:followupnew/ListAll.dart';
-
-// import 'AddTask.dart';
-// import 'TaskCompleted.dart';
-// import 'TaskReceive.dart';
-// import 'TaskSend.dart';
-
-// void main() {
-//   runApp(TaskManagementApp());
-// }
 String? id;
 var mainid;
 String? userid;
@@ -68,23 +58,6 @@ Future fcmtoken() async {
       body: {"fcm_token": '$token', "admintype": '$admintype', "id": '$id'});
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  //     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //       print(message.toString());
-  //         try {
-  //   Map<String, dynamic> data = message.data;
-  //        notificationServices.showNotification(data);
-  //        print(data);
-  // } catch (e) {
-  //   print('Exception: $e');
-  // }
-  //    });
-  // notificationServices.showNotification();
-  runApp(DashboardScreen());
-  //runApp(const MyApp());
-}
 
 Future<bool> onWillPopnew(BuildContext context) async {
   print("hiiii");
@@ -140,21 +113,15 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
+    fetchlist();
     Firebase.initializeApp();
     notificationServices.requestNotificationPermission();
     notificationServices.firebaseInit();
     fetchcount();
     print(notificationCount);
-    //Navigator.pop(context);
-
-    setState(() {
-      // Navigator.of(context).pop();
-    });
     fetchlist();
     fcmtoken();
     decodeToken();
-    // onWillPop(context);
-    //timer = Timer.periodic(Duration(minutes: 11111), (_) => fetchlist());
   }
 
   dynamic jsonData;
@@ -165,7 +132,6 @@ class _DashboardScreenState extends State<DashboardScreen>
     cmpid = preferences.getString('cmpid');
     admintype = preferences.getString('admintype');
     String currentTime = preferences.getString('preferencetime') ?? "";
-
     var url = Uri.parse(AppString.constanturl + 'getnotificationscount');
     final response = await http.post(url, body: {
       "id": id,
@@ -173,157 +139,89 @@ class _DashboardScreenState extends State<DashboardScreen>
       "admintype": admintype,
       "date": currentTime,
     });
-
     var jsondata = jsonDecode(response.body);
-
     setState(() {
       notificationCount = int.parse(jsondata['count']);
     });
   }
 
-  Future<void> fetchlists() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    userid = preferences.getString('id');
-    cmpid = preferences.getString('cmpid');
-    admintype = preferences.getString('admintype');
-    String apiUrl = AppString.constanturl + 'gettaskcount';
-    var response = await http.post(
-      Uri.parse(apiUrl),
-      body: {'id': userid, 'cmpid': cmpid, 'admintype': admintype},
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        jsonData = jsonDecode(response.body);
-        String list = jsonData['alllist'];
-        String incompleted = jsonData['incompleted'];
-        String completed = jsonData['completed'];
-        String receive = jsonData['receive'];
-        String send = jsonData['send'];
-        double overdue = double.parse(jsonData['overdue'].toString());
-
-        try {
-          double doubleValue1 = double.parse(list);
-          double doubleValue2 = double.parse(completed);
-          double doubleValue3 = double.parse(receive);
-          double doubleValue4 = double.parse(send);
-          double doubleValue5 = double.parse(incompleted);
-          double doubleValue6 = overdue;
-
-          taskData[0] = TaskData(
-            taskName: 'Task',
-            taskValue: doubleValue1.isFinite ? doubleValue1 : 0,
-            taskColor: Colors.purple,
-          );
-          taskData[1] = TaskData(
-            taskName: 'Pending',
-            taskValue: doubleValue5.isFinite ? doubleValue5 : 0,
-            taskColor: Color.fromARGB(255, 77, 77, 174),
-          );
-          taskData[2] = TaskData(
-            taskName: 'Overdue',
-            taskValue: doubleValue6.isFinite ? doubleValue6 : 0,
-            taskColor: Color.fromARGB(
-              255, // Alpha component (fully opaque)
-              194, // Red component
-              24, // Green component
-              7, // Blue component
-            ),
-          );
-          taskData[3] = TaskData(
-            taskName: 'Completed',
-            taskValue: doubleValue2.isFinite ? doubleValue2 : 0,
-            taskColor: Color.fromARGB(255, 96, 175, 96),
-          );
-          taskData[4] = TaskData(
-            taskName: 'Send',
-            taskValue: doubleValue4.isFinite ? doubleValue4 : 0,
-            taskColor: Color.fromARGB(255, 230, 200, 32),
-          );
-          taskData[5] = TaskData(
-            taskName: 'Receive',
-            taskValue: doubleValue3.isFinite ? doubleValue3 : 0,
-            taskColor: Colors.orange,
-          );
-        } catch (e) {
-          print('Error parsing data: $e');
-          // Assign default values or handle the error as per your app's requirements
-        }
-      });
-    } else {
-      print('Error fetching data. Status code: ${response.statusCode}');
-    }
-    timer?.cancel();
-    timer = null;
-  }
   Future<void> fetchlist() async {
-    String apiUrl = "http://103.159.85.246:4000/api/task/taskCounts";
-    var response = await http.post(
-      Uri.parse(apiUrl),
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        jsonData = jsonDecode(response.body);
-        String list = jsonData['alllist'];
-        String incompleted = jsonData['incompleted'];
-        String completed = jsonData['completed'];
-        String receive = jsonData['receive'];
-        String send = jsonData['send'];
-        double overdue = double.parse(jsonData['overdue'].toString());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String empTaskCountToken = prefs.getString("token") ?? "";
+    print("Token From Pending API $empTaskCountToken");
+    try {
+      final response = await http.get(
+        Uri.parse("http://103.159.85.246:4000/api/task/taskCounts"),
+        headers: {
+          'Authorization': empTaskCountToken,
+        },
+      );
 
-        try {
-          double doubleValue1 = double.parse(list);
-          double doubleValue2 = double.parse(completed);
-          double doubleValue3 = double.parse(receive);
-          double doubleValue4 = double.parse(send);
-          double doubleValue5 = double.parse(incompleted);
-          double doubleValue6 = overdue;
-
-          taskData[0] = TaskData(
-            taskName: 'Task',
-            taskValue: doubleValue1.isFinite ? doubleValue1 : 0,
-            taskColor: Colors.purple,
-          );
-          taskData[1] = TaskData(
-            taskName: 'Pending',
-            taskValue: doubleValue5.isFinite ? doubleValue5 : 0,
-            taskColor: Color.fromARGB(255, 77, 77, 174),
-          );
-          taskData[2] = TaskData(
-            taskName: 'Overdue',
-            taskValue: doubleValue6.isFinite ? doubleValue6 : 0,
-            taskColor: Color.fromARGB(
-              255, // Alpha component (fully opaque)
-              194, // Red component
-              24, // Green component
-              7, // Blue component
-            ),
-          );
-          taskData[3] = TaskData(
-            taskName: 'Completed',
-            taskValue: doubleValue2.isFinite ? doubleValue2 : 0,
-            taskColor: Color.fromARGB(255, 96, 175, 96),
-          );
-          taskData[4] = TaskData(
-            taskName: 'Send',
-            taskValue: doubleValue4.isFinite ? doubleValue4 : 0,
-            taskColor: Color.fromARGB(255, 230, 200, 32),
-          );
-          taskData[5] = TaskData(
-            taskName: 'Receive',
-            taskValue: doubleValue3.isFinite ? doubleValue3 : 0,
-            taskColor: Colors.orange,
-          );
-        } catch (e) {
-          print('Error parsing data: $e');
-          // Assign default values or handle the error as per your app's requirements
-        }
-      });
-    } else {
-      print('Error fetching data. Status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        setState(() {
+          Map<String, dynamic> jsonData = jsonDecode(response.body);
+          print("Ketan ########### $jsonData");
+          String list = jsonData['todayAddedTasks'].toString();
+          String incompleted = jsonData['pendingTasks'].toString();
+          String completed = jsonData['completedTasks'].toString();
+          String receive = jsonData['receivedTasks'].toString();
+          String send = jsonData['sendTasks'].toString();
+          double overdue = double.parse(jsonData['overdueTasks'].toString());
+          try {
+            double doubleValue1 = double.tryParse(list) ?? 0.0;
+            double doubleValue2 = double.tryParse(completed) ?? 0.0;
+            double doubleValue3 = double.tryParse(receive) ?? 0.0;
+            double doubleValue4 = double.tryParse(send) ?? 0.0;
+            double doubleValue5 = double.tryParse(incompleted) ?? 0.0;
+            double doubleValue6 = overdue;
+            print("######### Pending Task Value are $doubleValue5");
+            taskData[0] = TaskData(
+              taskName: 'Task',
+              taskValue: doubleValue1.isFinite ? doubleValue1 : 0.0,
+              taskColor: Colors.purple,
+            );
+            taskData[1] = TaskData(
+              taskName: 'Pending',
+              taskValue: doubleValue5.isFinite ? doubleValue5 : 0.0,
+              taskColor: Color(0xff7c81dd),
+            );
+            taskData[2] = TaskData(
+              taskName: 'Overdue',
+              taskValue: doubleValue6.isFinite ? doubleValue6 : 0.0,
+              taskColor: Color.fromARGB(255, 194, 24, 7),
+            );
+            taskData[3] = TaskData(
+              taskName: 'Completed',
+              taskValue: doubleValue2.isFinite ? doubleValue2 : 0.0,
+              taskColor: Color.fromARGB(255, 96, 175, 96),
+            );
+            taskData[4] = TaskData(
+              taskName: 'Send',
+              taskValue: doubleValue4.isFinite ? doubleValue4 : 0.0,
+              taskColor: Colors.amber,
+            );
+            taskData[5] = TaskData(
+              taskName: 'Receive',
+              taskValue: doubleValue3.isFinite ? doubleValue3 : 0.0,
+              taskColor: Colors.pink,
+            );
+          } catch (e) {
+            print('Error parsing data: $e');
+            // Handle parsing error as needed
+          }
+        });
+      } else {
+        print('Error fetching data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+      // Handle HTTP request error
     }
+
     timer?.cancel();
     timer = null;
   }
+
   @override
   void dispose() {
     timer?.cancel();
@@ -354,17 +252,17 @@ class _DashboardScreenState extends State<DashboardScreen>
   final List<TaskData> taskData = [
     TaskData(
       taskName: 'Task',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Colors.purple,
     ),
     TaskData(
       taskName: 'Pending',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Color.fromARGB(255, 77, 77, 174),
     ),
     TaskData(
       taskName: 'Overdue',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Color.fromARGB(
         255, // Alpha component (fully opaque)
         194, // Red component
@@ -374,23 +272,23 @@ class _DashboardScreenState extends State<DashboardScreen>
     ),
     TaskData(
       taskName: 'Completed',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Color.fromARGB(255, 96, 175, 96),
     ),
     TaskData(
       taskName: 'Send',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Color.fromARGB(255, 230, 200, 32),
     ),
     TaskData(
       taskName: 'Receive',
-      taskValue: 5, // Use a placeholder or default value
+      taskValue: 0, // Use a placeholder or default value
       taskColor: Colors.orange,
     ),
   ];
 
   final List<String> items = [
-    'Total Task',
+    'Todays Added Task',
     'Task Pending',
     'Task Overdue',
     'Task Completed',
